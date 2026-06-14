@@ -1,0 +1,1115 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { api } from '../api';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  FileText, MessageSquare, Download, UploadCloud, RefreshCw, Send, CheckCircle, 
+  Clock, AlertCircle, Sparkles, User, Briefcase, PlusCircle, Paperclip, Wand2
+} from 'lucide-react';
+import BoldTextAIPlugin from '../components/BoldTextAIPlugin';
+
+const AI_PHRASES = [
+  "Hi, could you please provide a status update on the draft?",
+  "Hello, I've attached additional references. Please review them.",
+  "Hi writer, please make sure to follow the grading rubric attached.",
+  "Could you double check the citation formatting of the bibliography?",
+  "Hello, I would like to request a revision for the introduction section."
+];
+
+export default function ManageOrders({ user, setView }) {
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  
+  // Available writers for Admin assignment
+  const [writers, setWriters] = useState([]);
+  const [assigneeId, setAssigneeId] = useState('');
+
+  // Portal Detail Tabs
+  const [activeTab, setActiveTab] = useState('orders'); // 'orders' or 'available' (for writer)
+  const [detailTab, setDetailTab] = useState('info'); // 'info', 'files', 'chat'
+
+  // Chat States
+  const [messages, setMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState('');
+  const [chatLoading, setChatLoading] = useState(false);
+  const chatEndRef = useRef(null);
+  const chatInterval = useRef(null);
+
+  // File Upload State
+  const [uploadFile, setUploadFile] = useState(null);
+  const [uploadType, setUploadType] = useState('instruction');
+  const [uploadLoading, setUploadLoading] = useState(false);
+  const [orderFiles, setOrderFiles] = useState([]);
+
+  // AI Chat helper popover
+  const [showAIReplies, setShowAIReplies] = useState(false);
+  const [boldtextPluginOpen, setBoldtextPluginOpen] = useState(false);
+
+  // Load orders lists
+  const loadOrders = async () => {
+    try {
+      setLoading(true);
+      const data = await api.getOrders();
+      setOrders(data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Pre-load writers for admin
+  const loadWriters = async () => {
+    if (user.role !== 'admin') return;
+    try {
+      setWriters([
+        { id: 2, name: 'John Writer (ENL)', email: 'writer@academic.com' }
+      ]);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    loadOrders();
+    loadWriters();
+    return () => {
+      if (chatInterval.current) clearInterval(chatInterval.current);
+    };
+  }, []);
+
+  // Poll messages when chat tab is open
+  useEffect(() => {
+    if (selectedOrder && detailTab === 'chat') {
+      loadMessages();
+      chatInterval.current = setInterval(loadMessages, 4000);
+    } else {
+      if (chatInterval.current) {
+        clearInterval(chatInterval.current);
+        chatInterval.current = null;
+      }
+    }
+    return () => {
+      if (chatInterval.current) clearInterval(chatInterval.current);
+    };
+  }, [selectedOrder, detailTab]);
+
+  const loadMessages = async () => {
+    if (!selectedOrder) return;
+    try {
+      const msgs = await api.getMessages(selectedOrder.id);
+      setMessages(msgs);
+      setTimeout(() => chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 50);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const loadFiles = async (orderId) => {
+    try {
+      const files = await api.getOrderFiles(orderId);
+      setOrderFiles(files);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleSelectOrder = (order) => {
+    setSelectedOrder(order);
+    setDetailTab('info');
+    loadFiles(order.id);
+  };
+
+  const handleSendMessage = async (e) => {
+    e.preventDefault();
+    if (!newMessage.trim() || !selectedOrder) return;
+
+    try {
+      const text = newMessage;
+      setNewMessage('');
+      await api.sendMessage(selectedOrder.id, text);
+      loadMessages();
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
+  // Claim Order (Writer Only)
+  const handleClaimOrder = async (orderId) => {
+    try {
+      await api.assignOrder(orderId, user.id);
+      alert('You have claimed this job successfully! It is now in your Assigned Orders list.');
+      loadOrders();
+      setSelectedOrder(null);
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
+  // Assign Writer (Admin Only)
+  const handleAssignWriter = async () => {
+    if (!assigneeId || !selectedOrder) return;
+    try {
+      await api.assignOrder(selectedOrder.id, assigneeId);
+      alert('Order assigned successfully!');
+      loadOrders();
+      setSelectedOrder(null);
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
+  // Update Status (Writer/Admin)
+  const handleStatusChange = async (newStatus) => {
+    if (!selectedOrder) return;
+    try {
+      await api.updateOrderStatus(selectedOrder.id, newStatus);
+      alert('Order status updated successfully.');
+      loadOrders();
+      setSelectedOrder(null);
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
+  // Handle File Upload
+  const handleFileUploadSubmit = async (e) => {
+    e.preventDefault();
+    if (!uploadFile || !selectedOrder) return;
+
+    try {
+      setUploadLoading(true);
+      await api.uploadFile(selectedOrder.id, uploadFile, uploadType);
+      setUploadFile(null);
+      alert('File uploaded successfully!');
+      loadFiles(selectedOrder.id);
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      setUploadLoading(false);
+    }
+  };
+
+  const handleDownload = async (fileId, fileName) => {
+    try {
+      await api.downloadFile(fileId, fileName);
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
+  // Split orders for writer: assigned vs available
+  const assignedOrders = orders.filter(o => o.writer_id === user.id);
+  const availableOrders = orders.filter(o => o.writer_id === null && o.status === 'pending');
+  const displayedOrders = user.role === 'writer' 
+    ? (activeTab === 'orders' ? assignedOrders : availableOrders)
+    : orders;
+
+  return (
+    <div className="container" style={styles.container}>
+      {/* Header Info */}
+      <div style={styles.headerPanel} className="glass-card glow-card-primary">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <div style={styles.avatar}>
+            <User size={32} color="#ffffff" />
+          </div>
+          <div>
+            <h2 style={{ color: '#ffffff', fontSize: '1.6rem' }}>Welcome Back, {user.name}!</h2>
+            <span style={{ color: 'var(--dark-text-muted)', fontSize: '0.88rem' }}>
+              Logged in as <strong style={{ color: 'var(--primary)' }}>{user.role}</strong> &bull; {user.email}
+            </span>
+          </div>
+        </div>
+
+        {user.role === 'client' && (
+          <button className="btn-accent" onClick={() => setView('order')}>
+            <PlusCircle size={16} /> Place New Order
+          </button>
+        )}
+      </div>
+
+      <div style={styles.workspace}>
+        {/* Left column: Orders list */}
+        <div style={styles.listCol}>
+          {user.role === 'writer' && (
+            <div style={styles.tabHeader}>
+              <button 
+                onClick={() => { setActiveTab('orders'); setSelectedOrder(null); }}
+                style={activeTab === 'orders' ? styles.tabActiveBtn : styles.tabBtn}
+              >
+                Assigned Orders ({assignedOrders.length})
+              </button>
+              <button 
+                onClick={() => { setActiveTab('available'); setSelectedOrder(null); }}
+                style={activeTab === 'available' ? styles.tabActiveBtn : styles.tabBtn}
+              >
+                Available Jobs ({availableOrders.length})
+              </button>
+            </div>
+          )}
+
+          <div style={styles.listHeader}>
+            <h3 style={{ color: 'var(--text-main)' }}>
+              {user.role === 'writer' 
+                ? (activeTab === 'orders' ? 'Your Assigned Orders' : 'Available Writing Jobs') 
+                : 'All Portal Orders'}
+            </h3>
+            <button style={styles.refreshBtn} onClick={loadOrders} title="Refresh">
+              <RefreshCw size={16} />
+            </button>
+          </div>
+
+          {loading ? (
+            <div style={styles.centeredMsg}>Loading portal workspace...</div>
+          ) : displayedOrders.length === 0 ? (
+            <div style={styles.centeredMsg}>No orders found.</div>
+          ) : (
+            <div style={styles.ordersList}>
+              <AnimatePresence>
+                {displayedOrders.map((order) => (
+                  <motion.div 
+                    layout
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    key={order.id}
+                    onClick={() => handleSelectOrder(order)}
+                    style={selectedOrder?.id === order.id ? styles.orderCardActive : styles.orderCard}
+                  >
+                    <div style={styles.orderCardHeader}>
+                      <span style={styles.orderId}>#ORD-{order.id}</span>
+                      <span className={`badge badge-${order.status}`}>{order.status}</span>
+                    </div>
+                    <strong style={styles.orderTopic}>{order.topic}</strong>
+                    <div style={styles.orderMeta}>
+                      <span>{order.paper_type} &bull; {order.page_qty} pg</span>
+                      <span style={{ color: 'var(--accent)', fontWeight: '700' }}>${order.total_price.toFixed(2)}</span>
+                    </div>
+                    <div style={styles.orderDeadline}>
+                      <Clock size={12} />
+                      <span>Deadline: {order.deadline_date}</span>
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
+          )}
+        </div>
+
+        {/* Right column: Order Workspace Details */}
+        <div style={styles.detailCol}>
+          <AnimatePresence mode="wait">
+            {selectedOrder ? (
+              <motion.div 
+                key={selectedOrder.id}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.25 }}
+                className="glass-card" 
+                style={styles.detailCard}
+              >
+                {/* Order Detail Header */}
+                <div style={styles.detailHeader}>
+                  <div>
+                    <span style={styles.detailOrderId}>Order #ORD-{selectedOrder.id}</span>
+                    <h3 style={{ color: 'var(--text-main)', marginTop: '4px' }}>{selectedOrder.topic}</h3>
+                  </div>
+                  <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                    <span className={`badge badge-${selectedOrder.status}`} style={{ padding: '8px 16px', fontSize: '0.9rem' }}>
+                      {selectedOrder.status}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Tabs navigation */}
+                <div style={styles.detailNav}>
+                  <button 
+                    onClick={() => setDetailTab('info')}
+                    style={detailTab === 'info' ? styles.detailNavActive : styles.detailNavBtn}
+                  >
+                    General Info
+                  </button>
+                  <button 
+                    onClick={() => setDetailTab('files')}
+                    style={detailTab === 'files' ? styles.detailNavActive : styles.detailNavBtn}
+                  >
+                    Files & Deliveries ({orderFiles.length})
+                  </button>
+                  <button 
+                    onClick={() => setDetailTab('chat')}
+                    style={detailTab === 'chat' ? styles.detailNavActive : styles.detailNavBtn}
+                  >
+                    Live Discussion
+                  </button>
+                </div>
+
+                {/* TAB CONTENT: GENERAL INFO */}
+                {detailTab === 'info' && (
+                  <motion.div 
+                    initial={{ opacity: 0 }} 
+                    animate={{ opacity: 1 }}
+                    style={styles.tabPane}
+                  >
+                    <div style={styles.infoGrid}>
+                      <div style={styles.infoItem}><span>Paper Type</span><strong>{selectedOrder.paper_type}</strong></div>
+                      <div style={styles.infoItem}><span>Academic Level</span><strong style={{ textTransform: 'capitalize' }}>{selectedOrder.academic_level}</strong></div>
+                      <div style={styles.infoItem}><span>Subject Field</span><strong>{selectedOrder.discipline}</strong></div>
+                      <div style={styles.infoItem}><span>Citation Format</span><strong>{selectedOrder.format}</strong></div>
+                      <div style={styles.infoItem}><span>Pages Count</span><strong>{selectedOrder.page_qty} pages ({selectedOrder.spacing} spacing)</strong></div>
+                      <div style={styles.infoItem}><span>Sources Cited</span><strong>{selectedOrder.sources_qty} source references</strong></div>
+                      <div style={styles.infoItem}><span>PPT Slides</span><strong>{selectedOrder.slides_qty} slides</strong></div>
+                      <div style={styles.infoItem}><span>Charts/Graphs</span><strong>{selectedOrder.charts_qty} charts</strong></div>
+                      <div style={styles.infoItem}><span>Deadline</span><strong>{selectedOrder.deadline_date}</strong></div>
+                      <div style={styles.infoItem}><span>Total Paid</span><strong style={{ color: 'var(--accent)' }}>${selectedOrder.total_price.toFixed(2)}</strong></div>
+                    </div>
+
+                    <div style={styles.descBlock}>
+                      <strong>Guidelines / Instructions:</strong>
+                      <p style={{ marginTop: '8px', whiteSpace: 'pre-wrap' }}>
+                        {selectedOrder.instructions || "No custom instructions provided."}
+                      </p>
+                    </div>
+
+                    {/* Actions based on role */}
+                    <div style={styles.actionsPanel}>
+                      {/* Admin assignment controls */}
+                      {user.role === 'admin' && (
+                        <div style={styles.adminAssignBlock}>
+                          <div className="form-group" style={{ marginBottom: 0, flex: 1 }}>
+                            <label>Assign to Writer</label>
+                            <select 
+                              value={assigneeId} 
+                              onChange={(e) => setAssigneeId(e.target.value)}
+                              className="form-input"
+                            >
+                              <option value="">-- Select Writer --</option>
+                              {writers.map(w => <option key={w.id} value={w.id}>{w.name}</option>)}
+                            </select>
+                          </div>
+                          <button className="btn-primary" onClick={handleAssignWriter} disabled={!assigneeId} style={{ marginTop: '20px' }}>
+                            Assign Writer
+                          </button>
+                        </div>
+                      )}
+
+                      {/* Writer Claim Option */}
+                      {user.role === 'writer' && selectedOrder.writer_id === null && (
+                        <button className="btn-accent" onClick={() => handleClaimOrder(selectedOrder.id)} style={{ width: '100%', justifyContent: 'center' }}>
+                          Accept & Claim Writing Job
+                        </button>
+                      )}
+
+                      {/* Status Modifiers */}
+                      {((user.role === 'writer' && selectedOrder.writer_id === user.id) || user.role === 'admin') && (
+                        <div style={styles.statusUpdateRow}>
+                          <span style={{ fontWeight: '600' }}>Change Order Status:</span>
+                          <div style={styles.statusBtns}>
+                            {selectedOrder.status === 'assigned' && (
+                              <button onClick={() => handleStatusChange('in_progress')} style={styles.statusInProgBtn}>
+                                Start Writing (In Progress)
+                              </button>
+                            )}
+                            {selectedOrder.status === 'in_progress' && (
+                              <button onClick={() => handleStatusChange('review')} style={styles.statusReviewBtn}>
+                                Submit for Client Review
+                              </button>
+                            )}
+                            {user.role === 'admin' && selectedOrder.status === 'review' && (
+                              <button onClick={() => handleStatusChange('completed')} style={styles.statusCompleteBtn}>
+                                Approve & Mark Completed
+                              </button>
+                            )}
+                            {user.role === 'admin' && selectedOrder.status !== 'completed' && (
+                              <button onClick={() => handleStatusChange('cancelled')} style={styles.statusCancelBtn}>
+                                Cancel Order
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* TAB CONTENT: FILES */}
+                {detailTab === 'files' && (
+                  <motion.div 
+                    initial={{ opacity: 0 }} 
+                    animate={{ opacity: 1 }}
+                    style={styles.tabPane}
+                  >
+                    <h4 style={{ marginBottom: '16px' }}>Order Attachments & Deliveries</h4>
+                    
+                    {orderFiles.length === 0 ? (
+                      <div style={styles.noFilesBox}>No files uploaded yet.</div>
+                    ) : (
+                      <div style={styles.filesList}>
+                        {orderFiles.map(file => (
+                          <div key={file.id} style={styles.fileRow}>
+                            <FileText size={20} color="var(--primary)" />
+                            <div style={{ flex: 1 }}>
+                              <strong>{file.file_name}</strong>
+                              <div style={styles.fileMeta}>
+                                <span style={styles.fileTag}>{file.file_type}</span>
+                                <span>Uploaded by {file.uploader_name} ({file.uploader_role})</span>
+                              </div>
+                            </div>
+                            <button style={styles.downloadBtn} onClick={() => handleDownload(file.id, file.file_name)}>
+                              <Download size={16} /> Download
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Upload new file form */}
+                    <form onSubmit={handleFileUploadSubmit} style={styles.uploadForm}>
+                      <strong style={{ display: 'block', marginBottom: '12px' }}>Upload New Attachment</strong>
+                      <div style={styles.uploadGrid}>
+                        <div className="form-group" style={{ flex: 1 }}>
+                          <label>File Type classification</label>
+                          <select 
+                            value={uploadType} 
+                            onChange={(e) => setUploadType(e.target.value)} 
+                            className="form-input"
+                          >
+                            {user.role === 'client' && <option value="instruction">Instruction Document</option>}
+                            {user.role === 'writer' && (
+                              <>
+                                <option value="draft">Draft Copy</option>
+                                <option value="final">Final Essay Delivery</option>
+                              </>
+                            )}
+                            {user.role === 'admin' && (
+                              <>
+                                <option value="instruction">Instruction Document</option>
+                                <option value="draft">Draft Copy</option>
+                                <option value="final">Final Essay Delivery</option>
+                              </>
+                            )}
+                          </select>
+                        </div>
+
+                        <div className="form-group" style={{ flex: 2 }}>
+                          <label>Select File</label>
+                          <input 
+                            type="file" 
+                            required 
+                            onChange={(e) => setUploadFile(e.target.files[0])} 
+                            className="form-input" 
+                          />
+                        </div>
+                      </div>
+
+                      <button 
+                        type="submit" 
+                        className="btn-primary" 
+                        disabled={uploadLoading}
+                        style={{ width: '180px', justifyContent: 'center', marginTop: '12px' }}
+                      >
+                        {uploadLoading ? 'Uploading...' : 'Upload File'}
+                      </button>
+                    </form>
+                  </motion.div>
+                )}
+
+                {/* TAB CONTENT: DISCUSSION CHAT */}
+                {detailTab === 'chat' && (
+                  <motion.div 
+                    initial={{ opacity: 0 }} 
+                    animate={{ opacity: 1 }}
+                    style={styles.chatPane}
+                  >
+                    <div style={styles.chatHeader}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                        <strong>Order Discussion Board</strong>
+                        <button 
+                          type="button" 
+                          onClick={() => setShowAIReplies(!showAIReplies)} 
+                          className="ai-helper-btn"
+                        >
+                          <Sparkles size={12} /> AI Quick Replies
+                        </button>
+                        <button 
+                          type="button" 
+                          onClick={() => setBoldtextPluginOpen(true)} 
+                          className="boldtext-trigger-btn"
+                        >
+                          <Sparkles size={12} /> BoldText AI
+                        </button>
+                      </div>
+                      <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Messages are confidential</span>
+                    </div>
+
+                    {/* AI Chat Helpers panel */}
+                    <AnimatePresence>
+                      {showAIReplies && (
+                        <motion.div 
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -10 }}
+                          className="ai-helper-panel"
+                          style={{ margin: '10px 16px 0 16px' }}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+                            <Wand2 size={14} color="#c084fc" />
+                            <strong style={{ fontSize: '0.82rem' }}>AI Suggested Message Drafts</strong>
+                          </div>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                            {AI_PHRASES.map((phrase, idx) => (
+                              <div 
+                                key={idx} 
+                                onClick={() => { setNewMessage(phrase); setShowAIReplies(false); }}
+                                className="ai-suggestion-item"
+                                style={{ fontSize: '0.8rem', padding: '8px 12px', margin: 0 }}
+                              >
+                                {phrase}
+                              </div>
+                            ))}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+
+                    <div style={styles.chatMessagesList}>
+                      {messages.length === 0 ? (
+                        <div style={styles.noChatBox}>No discussion messages. Introduce yourself or clarify instructions!</div>
+                      ) : (
+                        messages.map(msg => {
+                          const isSelf = msg.sender_id === user.id;
+                          return (
+                            <motion.div 
+                              initial={{ opacity: 0, y: 15 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              key={msg.id}
+                              style={isSelf ? styles.msgRowSelf : styles.msgRow}
+                            >
+                              <div style={isSelf ? styles.msgBubbleSelf : styles.msgBubble}>
+                                <div style={styles.msgUploader}>
+                                  <strong>{msg.sender_name}</strong>
+                                  <span style={styles.msgRole}>({msg.sender_role})</span>
+                                </div>
+                                <p style={{ margin: 0, fontSize: '0.92rem' }}>{msg.message_text}</p>
+                                <span style={styles.msgTime}>
+                                  {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                </span>
+                              </div>
+                            </motion.div>
+                          );
+                        })
+                      )}
+                      <div ref={chatEndRef} />
+                    </div>
+
+                    <form onSubmit={handleSendMessage} style={styles.chatForm}>
+                      <input 
+                        type="text" 
+                        value={newMessage}
+                        onChange={(e) => setNewMessage(e.target.value)}
+                        placeholder="Type a message or use AI quick replies..."
+                        style={styles.chatInput}
+                      />
+                      <button type="submit" style={styles.chatSendBtn}>
+                        <Send size={16} /> Send
+                      </button>
+                    </form>
+                  </motion.div>
+                )}
+              </motion.div>
+            ) : (
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                style={styles.emptyDetail} 
+                className="glass-card"
+              >
+                <Briefcase size={48} color="var(--text-muted)" style={{ marginBottom: '16px' }} />
+                <h3>Select an Order</h3>
+                <p style={{ color: 'var(--text-muted)', textAlign: 'center', maxWidth: '320px', marginTop: '8px' }}>
+                  Pick an order from the list on the left to view instructions, files, and chat with clients/writers.
+                </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
+
+      <BoldTextAIPlugin 
+        isOpen={boldtextPluginOpen} 
+        onClose={() => setBoldtextPluginOpen(false)} 
+        initialText={newMessage} 
+        onApply={(processedText) => setNewMessage(processedText)} 
+        theme="dark"
+      />
+    </div>
+  );
+}
+
+const styles = {
+  container: {
+    padding: '40px 0 80px 0',
+  },
+  headerPanel: {
+    background: '#090d16',
+    color: '#ffffff',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '24px 32px',
+    marginBottom: '32px',
+    boxShadow: 'var(--shadow-lg)',
+    border: '1px solid rgba(255,255,255,0.05)',
+  },
+  avatar: {
+    width: '56px',
+    height: '56px',
+    borderRadius: '50%',
+    background: 'var(--primary)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    boxShadow: '0 4px 12px var(--primary-glow)',
+  },
+  workspace: {
+    display: 'flex',
+    gap: '30px',
+    alignItems: 'flex-start',
+    flexWrap: 'wrap',
+  },
+  listCol: {
+    flex: 1,
+    minWidth: '300px',
+  },
+  detailCol: {
+    flex: 2,
+    minWidth: '320px',
+  },
+  tabHeader: {
+    display: 'flex',
+    background: 'rgba(0,0,0,0.03)',
+    border: '1px solid var(--border-light)',
+    borderRadius: '10px',
+    overflow: 'hidden',
+    marginBottom: '20px',
+  },
+  tabBtn: {
+    flex: 1,
+    background: 'none',
+    border: 'none',
+    padding: '12px',
+    fontWeight: '600',
+    color: 'var(--text-muted)',
+    cursor: 'pointer',
+  },
+  tabActiveBtn: {
+    flex: 1,
+    background: '#ffffff',
+    border: 'none',
+    padding: '12px',
+    fontWeight: '700',
+    color: 'var(--primary)',
+    boxShadow: 'var(--shadow-sm)',
+  },
+  listHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: '16px',
+  },
+  refreshBtn: {
+    background: 'none',
+    border: '1px solid var(--border-light)',
+    color: 'var(--text-muted)',
+    width: '32px',
+    height: '32px',
+    borderRadius: '8px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    cursor: 'pointer',
+    transition: 'var(--transition)',
+    ':hover': {
+      color: 'var(--primary)',
+      background: 'var(--primary-light)',
+    }
+  },
+  ordersList: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '12px',
+  },
+  orderCard: {
+    background: '#ffffff',
+    border: '1px solid var(--border-light)',
+    borderRadius: '12px',
+    padding: '16px 20px',
+    cursor: 'pointer',
+    transition: 'var(--transition)',
+    ':hover': {
+      transform: 'translateY(-2px)',
+      boxShadow: 'var(--shadow-md)',
+    }
+  },
+  orderCardActive: {
+    background: '#ffffff',
+    border: '2px solid var(--primary)',
+    borderRadius: '12px',
+    padding: '15px 19px',
+    cursor: 'pointer',
+    boxShadow: 'var(--shadow-md)',
+  },
+  orderCardHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: '8px',
+  },
+  orderId: {
+    fontSize: '0.8rem',
+    fontWeight: '700',
+    color: 'var(--text-muted)',
+  },
+  orderTopic: {
+    fontSize: '0.98rem',
+    color: 'var(--text-main)',
+    display: 'block',
+    marginBottom: '8px',
+  },
+  orderMeta: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    fontSize: '0.85rem',
+    color: 'var(--text-muted)',
+    marginBottom: '8px',
+  },
+  orderDeadline: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    fontSize: '0.8rem',
+    color: '#b54708',
+    background: '#fef0c7',
+    padding: '4px 8px',
+    borderRadius: '4px',
+    width: 'fit-content',
+    fontWeight: '600',
+  },
+  centeredMsg: {
+    textAlign: 'center',
+    padding: '40px',
+    color: 'var(--text-muted)',
+  },
+  detailCard: {
+    background: '#ffffff',
+    border: '1px solid var(--border-light)',
+    padding: '32px',
+    boxShadow: 'var(--shadow-lg)',
+  },
+  emptyDetail: {
+    background: '#ffffff',
+    border: '1px solid var(--border-light)',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    padding: '80px 40px',
+  },
+  detailHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    gap: '20px',
+    borderBottom: '1px solid var(--border-light)',
+    paddingBottom: '20px',
+    marginBottom: '20px',
+  },
+  detailOrderId: {
+    fontSize: '0.85rem',
+    fontWeight: '700',
+    color: 'var(--primary)',
+    letterSpacing: '0.05em',
+  },
+  detailNav: {
+    display: 'flex',
+    borderBottom: '1px solid var(--border-light)',
+    marginBottom: '24px',
+    gap: '20px',
+  },
+  detailNavBtn: {
+    background: 'none',
+    border: 'none',
+    padding: '10px 4px',
+    fontWeight: '600',
+    fontSize: '0.9rem',
+    color: 'var(--text-muted)',
+    cursor: 'pointer',
+    position: 'relative',
+  },
+  detailNavActive: {
+    background: 'none',
+    border: 'none',
+    padding: '10px 4px',
+    fontWeight: '700',
+    fontSize: '0.9rem',
+    color: 'var(--primary)',
+    cursor: 'pointer',
+    position: 'relative',
+    borderBottom: '2px solid var(--primary)',
+  },
+  tabPane: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '24px',
+  },
+  infoGrid: {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr',
+    gap: '16px',
+    background: 'var(--bg-main)',
+    padding: '20px',
+    borderRadius: '12px',
+    border: '1px solid var(--border-light)',
+  },
+  infoItem: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '4px',
+    fontSize: '0.88rem',
+    span: {
+      color: 'var(--text-muted)',
+      fontWeight: '500',
+      fontSize: '0.78rem',
+    }
+  },
+  descBlock: {
+    borderLeft: '4px solid var(--primary)',
+    paddingLeft: '16px',
+    fontSize: '0.92rem',
+  },
+  actionsPanel: {
+    marginTop: '20px',
+    borderTop: '1px solid var(--border-light)',
+    paddingTop: '20px',
+  },
+  adminAssignBlock: {
+    display: 'flex',
+    alignItems: 'flex-end',
+    gap: '16px',
+    background: 'var(--bg-main)',
+    padding: '16px',
+    borderRadius: '8px',
+    border: '1px solid var(--border-light)',
+  },
+  statusUpdateRow: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '12px',
+    background: 'var(--bg-main)',
+    padding: '16px',
+    borderRadius: '8px',
+    border: '1px solid var(--border-light)',
+  },
+  statusBtns: {
+    display: 'flex',
+    gap: '10px',
+    flexWrap: 'wrap',
+  },
+  statusInProgBtn: {
+    background: 'var(--primary)',
+    color: '#fff',
+    border: 'none',
+    padding: '8px 16px',
+    borderRadius: '6px',
+    fontWeight: '600',
+    cursor: 'pointer',
+  },
+  statusReviewBtn: {
+    background: 'var(--accent)',
+    color: '#fff',
+    border: 'none',
+    padding: '8px 16px',
+    borderRadius: '6px',
+    fontWeight: '600',
+    cursor: 'pointer',
+  },
+  statusCompleteBtn: {
+    background: 'var(--accent)',
+    color: '#fff',
+    border: 'none',
+    padding: '8px 16px',
+    borderRadius: '6px',
+    fontWeight: '600',
+    cursor: 'pointer',
+  },
+  statusCancelBtn: {
+    background: '#dc2626',
+    color: '#fff',
+    border: 'none',
+    padding: '8px 16px',
+    borderRadius: '6px',
+    fontWeight: '600',
+    cursor: 'pointer',
+  },
+  noFilesBox: {
+    textAlign: 'center',
+    padding: '30px',
+    border: '1px dashed var(--border-light)',
+    borderRadius: '8px',
+    color: 'var(--text-muted)',
+  },
+  filesList: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '12px',
+  },
+  fileRow: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '16px',
+    background: 'var(--bg-main)',
+    padding: '12px 16px',
+    borderRadius: '8px',
+    border: '1px solid var(--border-light)',
+  },
+  fileMeta: {
+    display: 'flex',
+    gap: '10px',
+    fontSize: '0.75rem',
+    color: 'var(--text-muted)',
+    marginTop: '4px',
+    alignItems: 'center',
+  },
+  fileTag: {
+    background: 'var(--primary-light)',
+    color: 'var(--primary)',
+    padding: '1px 6px',
+    borderRadius: '4px',
+    fontWeight: '700',
+    textTransform: 'uppercase',
+  },
+  downloadBtn: {
+    background: 'none',
+    border: '1px solid var(--primary)',
+    color: 'var(--primary)',
+    padding: '6px 12px',
+    borderRadius: '6px',
+    cursor: 'pointer',
+    fontWeight: '600',
+    fontSize: '0.8rem',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '4px',
+    ':hover': {
+      background: 'var(--primary-light)',
+    }
+  },
+  uploadForm: {
+    marginTop: '24px',
+    borderTop: '1px solid var(--border-light)',
+    paddingTop: '24px',
+  },
+  uploadGrid: {
+    display: 'flex',
+    gap: '16px',
+    flexWrap: 'wrap',
+  },
+  chatPane: {
+    display: 'flex',
+    flexDirection: 'column',
+    height: '460px',
+    border: '1px solid var(--border-light)',
+    borderRadius: '12px',
+    overflow: 'hidden',
+    background: 'var(--bg-main)',
+  },
+  chatHeader: {
+    background: '#ffffff',
+    borderBottom: '1px solid var(--border-light)',
+    padding: '16px',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  chatMessagesList: {
+    flex: 1,
+    padding: '20px',
+    overflowY: 'auto',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '16px',
+  },
+  noChatBox: {
+    textAlign: 'center',
+    color: 'var(--text-muted)',
+    margin: 'auto',
+    maxWidth: '280px',
+    fontSize: '0.88rem',
+  },
+  msgRow: {
+    display: 'flex',
+    justifyContent: 'flex-start',
+  },
+  msgRowSelf: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+  },
+  msgBubble: {
+    background: '#ffffff',
+    border: '1px solid var(--border-light)',
+    padding: '12px 16px',
+    borderRadius: '12px 12px 12px 0',
+    maxWidth: '75%',
+    boxShadow: 'var(--shadow-sm)',
+  },
+  msgBubbleSelf: {
+    background: 'var(--primary-light)',
+    border: '1px solid rgba(0, 122, 255, 0.15)',
+    padding: '12px 16px',
+    borderRadius: '12px 12px 0 12px',
+    maxWidth: '75%',
+    boxShadow: 'var(--shadow-sm)',
+  },
+  msgUploader: {
+    display: 'flex',
+    gap: '6px',
+    fontSize: '0.78rem',
+    marginBottom: '4px',
+  },
+  msgRole: {
+    color: 'var(--text-muted)',
+    textTransform: 'capitalize',
+  },
+  msgTime: {
+    display: 'block',
+    fontSize: '0.7rem',
+    color: 'var(--text-muted)',
+    textAlign: 'right',
+    marginTop: '6px',
+  },
+  chatForm: {
+    background: '#ffffff',
+    borderTop: '1px solid var(--border-light)',
+    padding: '12px',
+    display: 'flex',
+    gap: '8px',
+  },
+  chatInput: {
+    flex: 1,
+    border: '1px solid var(--border-light)',
+    borderRadius: '8px',
+    padding: '10px 16px',
+    fontSize: '0.9rem',
+  },
+  chatSendBtn: {
+    background: 'var(--primary)',
+    color: '#ffffff',
+    border: 'none',
+    padding: '0 16px',
+    borderRadius: '8px',
+    fontWeight: '600',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+  }
+};
