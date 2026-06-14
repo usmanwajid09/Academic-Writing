@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Award, Users, BookOpen, Star, ArrowRight, ShieldCheck, CheckCircle } from 'lucide-react';
 import TiltCard from '../components/TiltCard';
+import CircuCD from '../components/CircuCD';
 
 const WRITERS = [
   {
@@ -150,6 +151,33 @@ export default function About({ setView }) {
                 <span>Unlimited Free revisions for 14-30 days</span>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials Vinyl Player Section */}
+      <section style={{ padding: '80px 0', background: '#ffffff', borderBottom: '1px solid var(--border-light)' }}>
+        <div className="container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '48px', alignItems: 'center' }}>
+          <div>
+            <span style={{ fontSize: '0.85rem', fontWeight: '800', letterSpacing: '2px', color: 'var(--primary)', textTransform: 'uppercase' }}>
+              Student Vinyl Records
+            </span>
+            <h2 style={{ fontSize: '2.5rem', marginTop: '12px', marginBottom: '20px', color: '#0f172a' }}>
+              Spin to Hear Client Success Audio logs
+            </h2>
+            <p style={{ color: 'var(--text-muted)', fontSize: '1.05rem', lineHeight: '1.6', marginBottom: '24px' }}>
+              Click on the CD to slide it out from the sleeve, drop the needle arm, and click play to listen to verified student reviews from our economics, engineering, and literature client tracks.
+            </p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(99,102,241,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)', fontWeight: 'bold' }}>
+                HQ
+              </div>
+              <span style={{ fontSize: '0.9rem', fontWeight: '600', color: '#475569' }}>Fully Verified client submissions &bull; Studio Grade playback</span>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <CircuCD />
           </div>
         </div>
       </section>

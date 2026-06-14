@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { FileText, Award, BookOpen, Layers, Edit3, ArrowRight, Shield, Zap } from 'lucide-react';
+import VortexGallery from '../components/VortexGallery';
 
 const SERVICES = [
   {
@@ -73,6 +74,22 @@ export default function Services({ setView }) {
             We provide custom academic assistance in over 75 subjects. Each paper is tailored to your exact prompt requirements and academic level.
           </p>
         </motion.div>
+      </section>
+
+      {/* 3D Vortex Spin Gallery Showcase */}
+      <section style={{ marginBottom: '80px', overflow: 'hidden' }}>
+        <div className="container" style={{ textAlign: 'center', marginBottom: '24px' }}>
+          <span style={{ fontSize: '0.8rem', fontWeight: '700', color: 'var(--accent)', letterSpacing: '1px', textTransform: 'uppercase' }}>
+            3D Interactive Showcase
+          </span>
+          <h2 style={{ fontSize: '2rem', marginTop: '6px', color: '#0f172a' }}>
+            Explore Popular Academic Formats
+          </h2>
+          <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>
+            Drag left/right to spin the vortex cylinder and discover our writing catalog.
+          </p>
+        </div>
+        <VortexGallery onSelect={() => setView('order')} />
       </section>
 
       {/* Services Grid (Staggered Layouts) */}

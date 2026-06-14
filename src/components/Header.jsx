@@ -4,10 +4,27 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Header({ user, onLogout, setView, activeView }) {
   const [menuOpen, setMenuOpen] = React.useState(false);
+  const [fullscreenOpen, setFullscreenOpen] = React.useState(false);
+  const [hoveredLink, setHoveredLink] = React.useState(null);
+  const [mousePos, setMousePos] = React.useState({ x: 0, y: 0 });
+
+  const navItems = [
+    { key: 'home', label: 'Home', img: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=400&q=80' },
+    { key: 'about', label: 'About Us', img: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=400&q=80' },
+    { key: 'services', label: 'Our Services', img: 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=400&q=80' },
+    { key: 'pricing', label: 'Pricing Calculator', img: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=400&q=80' },
+    { key: 'faq', label: 'FAQ Directory', img: 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=400&q=80' },
+    { key: 'contact', label: 'Contact Support', img: 'https://images.unsplash.com/photo-1501504905252-473c47e087f8?auto=format&fit=crop&w=400&q=80' }
+  ];
+
+  const handleMouseMove = (e) => {
+    setMousePos({ x: e.clientX, y: e.clientY });
+  };
 
   const handleNav = (view, elementId) => {
     setView(view);
     setMenuOpen(false);
+    setFullscreenOpen(false);
     if (elementId) {
       setTimeout(() => {
         const el = document.getElementById(elementId);
@@ -73,58 +90,65 @@ export default function Header({ user, onLogout, setView, activeView }) {
             )}
           </div>
 
-          {/* Mobile Menu Icon */}
-          <button className="mobile-menu-toggle" onClick={() => setMenuOpen(!menuOpen)}>
-            {menuOpen ? <X size={24} /> : <Menu size={24} />}
+          {/* Morphing Hamburger Menu Button */}
+          <button 
+            className="menu-burger-btn" 
+            onClick={() => setFullscreenOpen(!fullscreenOpen)}
+            style={{ marginLeft: '20px' }}
+          >
+            <div className={`burger-line line1 ${fullscreenOpen ? 'open' : ''}`} />
+            <div className={`burger-line line2 ${fullscreenOpen ? 'open' : ''}`} />
+            <div className={`burger-line line3 ${fullscreenOpen ? 'open' : ''}`} />
           </button>
         </div>
       </div>
 
-      {/* Mobile Drawer using Framer Motion */}
-      <AnimatePresence>
-        {menuOpen && (
-          <motion.div 
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.25, ease: 'easeInOut' }}
-            style={styles.mobileDrawer}
-          >
-            <span style={activeView === 'home' ? styles.mobileActiveLink : styles.mobileLink} onClick={() => handleNav('home')}>Home</span>
-            <span style={activeView === 'about' ? styles.mobileActiveLink : styles.mobileLink} onClick={() => handleNav('about')}>About Us</span>
-            <span style={activeView === 'services' ? styles.mobileActiveLink : styles.mobileLink} onClick={() => handleNav('services')}>Our Services</span>
-            <span style={activeView === 'pricing' ? styles.mobileActiveLink : styles.mobileLink} onClick={() => handleNav('pricing')}>Pricing</span>
-            <span style={activeView === 'faq' ? styles.mobileActiveLink : styles.mobileLink} onClick={() => handleNav('faq')}>FAQ</span>
-            <span style={activeView === 'contact' ? styles.mobileActiveLink : styles.mobileLink} onClick={() => handleNav('contact')}>Contact</span>
-            
-            <hr style={styles.divider} />
-
+      {/* Fullscreen Overlay Menu */}
+      <div 
+        className={`fullscreen-menu-overlay ${fullscreenOpen ? 'open' : ''}`}
+        onMouseMove={handleMouseMove}
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          {navItems.map((item) => (
+            <span 
+              key={item.key}
+              className="menu-link-item"
+              onMouseEnter={() => setHoveredLink(item.key)}
+              onMouseLeave={() => setHoveredLink(null)}
+              onClick={() => handleNav(item.key)}
+            >
+              {item.label}
+            </span>
+          ))}
+          <div style={{ marginTop: '40px', display: 'flex', gap: '20px' }}>
             {user ? (
-              <div style={styles.mobileUser}>
-                <div style={styles.mobileUserInfo}>
-                  <User size={20} />
-                  <strong>{user.name} ({user.role})</strong>
-                </div>
-                <button style={styles.mobileDashboardBtn} onClick={() => handleNav('portal')}>
-                  Manage Orders
-                </button>
-                <button style={styles.mobileLogoutBtn} onClick={onLogout}>
-                  <LogOut size={16} /> Logout
-                </button>
-              </div>
+              <button className="btn-accent" onClick={() => handleNav('portal')}>Manage Orders</button>
             ) : (
-              <div style={styles.mobileGuest}>
-                <button style={styles.mobileLoginBtn} onClick={() => handleNav('portal')}>
-                  Sign In
-                </button>
-                <button className="btn-primary" style={{ width: '100%', justifyContent: 'center' }} onClick={() => handleNav('order')}>
-                  Order Now
-                </button>
-              </div>
+              <>
+                <button className="btn-secondary" style={{ color: '#fff', borderColor: '#fff' }} onClick={() => handleNav('portal')}>Sign In</button>
+                <button className="btn-primary" onClick={() => handleNav('order')}>Order Now</button>
+              </>
             )}
-          </motion.div>
+          </div>
+        </div>
+      </div>
+
+      {/* Floating preview image */}
+      <div 
+        className={`menu-floating-preview ${hoveredLink ? 'visible' : ''}`}
+        style={{
+          left: `${mousePos.x + 20}px`,
+          top: `${mousePos.y + 20}px`
+        }}
+      >
+        {hoveredLink && (
+          <img 
+            src={navItems.find(item => item.key === hoveredLink)?.img} 
+            alt="Preview" 
+            className="menu-floating-img"
+          />
         )}
-      </AnimatePresence>
+      </div>
     </header>
   );
 }

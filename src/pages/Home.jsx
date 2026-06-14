@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Calculator from '../components/Calculator';
 import TiltCard from '../components/TiltCard';
+import XRayCard from '../components/XRayCard';
 import { motion } from 'framer-motion';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -397,19 +398,11 @@ export default function Home({ onOrderRedirect, setView }) {
       {/* About Us Section with GSAP ScrollTrigger reveal */}
       <section style={styles.aboutSec} id="about-sec">
         <div className="container responsive-grid-about" ref={aboutRef}>
-          <div style={styles.aboutImgWrapper}>
-            <img 
-              src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=800" 
-              alt="Academic Writing Team"
-              style={styles.aboutImg}
+          <div style={{ flex: 1, minWidth: '320px' }}>
+            <XRayCard 
+              imageSrc="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=800" 
+              altText="Academic Writing Team"
             />
-            <div style={styles.aboutBadge}>
-              <Award size={32} color="#ffffff" />
-              <div>
-                <strong style={{ display: 'block', fontSize: '1.2rem' }}>Top Quality</strong>
-                <span>Certified Writers</span>
-              </div>
-            </div>
           </div>
           <div style={styles.aboutContent}>
             <span style={styles.sectionSubtitle}>ABOUT OUR SERVICES</span>
