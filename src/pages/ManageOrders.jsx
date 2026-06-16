@@ -89,6 +89,7 @@ export default function ManageOrders({ user, setView, onLoginSuccess }) {
 
   // Load orders lists
   const loadOrders = async () => {
+    if (!user) return;
     try {
       setLoading(true);
       const data = await api.getOrders();
@@ -102,7 +103,7 @@ export default function ManageOrders({ user, setView, onLoginSuccess }) {
 
   // Pre-load writers for admin
   const loadWriters = async () => {
-    if (user.role !== 'admin') return;
+    if (!user || user.role !== 'admin') return;
     try {
       setWriters([
         { id: 2, name: 'John Writer (ENL)', email: 'writer@academic.com' }
@@ -118,7 +119,7 @@ export default function ManageOrders({ user, setView, onLoginSuccess }) {
     return () => {
       if (chatInterval.current) clearInterval(chatInterval.current);
     };
-  }, []);
+  }, [user]);
 
   // Poll messages when chat tab is open
   useEffect(() => {

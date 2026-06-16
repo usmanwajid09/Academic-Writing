@@ -313,7 +313,7 @@ export default function Home({ onOrderRedirect, setView }) {
           </div>
           
           <div className="horizontal-scroll-wrap" ref={journeyContainerRef}>
-            <div className="horizontal-scroll-container" style={{ width: '400vw' }}>
+            <div className="horizontal-scroll-container">
               
               {/* Slide 1 */}
               <div className="horizontal-slide">

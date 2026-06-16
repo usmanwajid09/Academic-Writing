@@ -830,16 +830,17 @@ p {
 }
 .horizontal-scroll-container {
   display: flex;
-  width: 300%; /* Will hold 3 sections or slides side by side */
+  width: max-content;
+  gap: 48px;
+  padding: 0 10vw;
   will-change: transform;
 }
 .horizontal-slide {
-  width: 100vw;
+  width: min(450px, 85vw);
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 40px;
 }
 
 /* Contact support ticket box */
