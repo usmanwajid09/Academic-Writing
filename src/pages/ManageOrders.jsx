@@ -24,10 +24,43 @@ const stepLabels = {
   completed: 'Completed'
 };
 
-export default function ManageOrders({ user, setView }) {
+export default function ManageOrders({ user, setView, onLoginSuccess }) {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  
+  // Auth Form States (when logged out)
+  const [authMode, setAuthMode] = useState('login'); // 'login' or 'register'
+  const [authEmail, setAuthEmail] = useState('');
+  const [authPassword, setAuthPassword] = useState('');
+  const [authName, setAuthName] = useState('');
+  const [authPhone, setAuthPhone] = useState('');
+  const [authError, setAuthError] = useState('');
+  const [authLoading, setAuthLoading] = useState(false);
+
+  const handleAuthSubmit = async (e) => {
+    e.preventDefault();
+    setAuthError('');
+    setAuthLoading(true);
+    try {
+      if (authMode === 'login') {
+        const data = await api.login(authEmail, authPassword);
+        localStorage.setItem('token', data.token);
+        onLoginSuccess(data.user);
+        // Refresh page/component state
+        loadOrders();
+      } else {
+        const data = await api.register(authEmail, authPassword, authName, authPhone);
+        localStorage.setItem('token', data.token);
+        onLoginSuccess(data.user);
+        loadOrders();
+      }
+    } catch (err) {
+      setAuthError(err.message || 'Authentication failed');
+    } finally {
+      setAuthLoading(false);
+    }
+  };
   
   // Available writers for Admin assignment
   const [writers, setWriters] = useState([]);
@@ -259,6 +292,120 @@ export default function ManageOrders({ user, setView }) {
       alert(err.message);
     }
   };
+
+  if (!user) {
+    return (
+      <div className="container" style={{ padding: '60px 0', display: 'flex', justifyContent: 'center' }}>
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="glass-card" 
+          style={{ maxWidth: '480px', width: '100%', padding: '40px', background: 'var(--bg-card)', borderColor: 'var(--border-light)' }}
+        >
+          <h2 style={{ textAlign: 'center', marginBottom: '8px', color: 'var(--text-main)' }}>
+            {authMode === 'login' ? 'Sign In to Portal' : 'Create Client Account'}
+          </h2>
+          <p style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '24px' }}>
+            {authMode === 'login' 
+              ? 'Access your academic order status, chat with writers, and download final papers.' 
+              : 'Sign up to hire writers, place custom paper assignments, and track delivery progress.'}
+          </p>
+
+          {authError && (
+            <div style={{ background: '#fee2e2', color: '#991b1b', padding: '12px', borderRadius: '8px', fontSize: '0.88rem', marginBottom: '16px', fontWeight: '500' }}>
+              ⚠️ {authError}
+            </div>
+          )}
+
+          <form onSubmit={handleAuthSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            {authMode === 'register' && (
+              <div className="form-group">
+                <label>Full Name</label>
+                <input 
+                  type="text" 
+                  required 
+                  className="form-input" 
+                  placeholder="e.g. John Doe"
+                  value={authName}
+                  onChange={(e) => setAuthName(e.target.value)}
+                />
+              </div>
+            )}
+
+            <div className="form-group">
+              <label>Email Address</label>
+              <input 
+                type="email" 
+                required 
+                className="form-input" 
+                placeholder="email@example.com"
+                value={authEmail}
+                onChange={(e) => setAuthEmail(e.target.value)}
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Password</label>
+              <input 
+                type="password" 
+                required 
+                className="form-input" 
+                placeholder="••••••••"
+                value={authPassword}
+                onChange={(e) => setAuthPassword(e.target.value)}
+              />
+            </div>
+
+            {authMode === 'register' && (
+              <div className="form-group">
+                <label>Phone Number (Optional)</label>
+                <input 
+                  type="tel" 
+                  className="form-input" 
+                  placeholder="e.g. +1 (555) 019-2834"
+                  value={authPhone}
+                  onChange={(e) => setAuthPhone(e.target.value)}
+                />
+              </div>
+            )}
+
+            <button 
+              type="submit" 
+              className="btn-primary" 
+              disabled={authLoading}
+              style={{ width: '100%', justifyContent: 'center', marginTop: '10px' }}
+            >
+              {authLoading ? 'Verifying...' : (authMode === 'login' ? 'Sign In' : 'Sign Up')}
+            </button>
+          </form>
+
+          <div style={{ marginTop: '24px', textAlign: 'center', fontSize: '0.9rem', color: 'var(--text-muted)' }}>
+            {authMode === 'login' ? (
+              <>
+                Don't have an account?{' '}
+                <span 
+                  onClick={() => { setAuthMode('register'); setAuthError(''); }} 
+                  style={{ color: 'var(--primary)', fontWeight: '600', cursor: 'pointer', textDecoration: 'underline' }}
+                >
+                  Sign Up
+                </span>
+              </>
+            ) : (
+              <>
+                Already have an account?{' '}
+                <span 
+                  onClick={() => { setAuthMode('login'); setAuthError(''); }} 
+                  style={{ color: 'var(--primary)', fontWeight: '600', cursor: 'pointer', textDecoration: 'underline' }}
+                >
+                  Sign In
+                </span>
+              </>
+            )}
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
 
   // Split orders for writer: assigned vs available
   const assignedOrders = orders.filter(o => o.writer_id === user.id);

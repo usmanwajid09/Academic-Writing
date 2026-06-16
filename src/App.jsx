@@ -167,6 +167,7 @@ export default function App() {
               <ManageOrders 
                 user={user} 
                 setView={setView} 
+                onLoginSuccess={handleLoginSuccess}
               />
             </motion.div>
           )}
