@@ -1,5 +1,5 @@
 import React from 'react';
-import { GraduationCap, LogOut, User, Menu, X } from 'lucide-react';
+import { GraduationCap, LogOut, User, Menu, X, Sun, Moon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Header({ user, onLogout, setView, activeView }) {
@@ -7,6 +7,25 @@ export default function Header({ user, onLogout, setView, activeView }) {
   const [fullscreenOpen, setFullscreenOpen] = React.useState(false);
   const [hoveredLink, setHoveredLink] = React.useState(null);
   const [mousePos, setMousePos] = React.useState({ x: 0, y: 0 });
+  const [theme, setTheme] = React.useState(() => {
+    const saved = localStorage.getItem('theme');
+    if (saved) return saved;
+    return document.documentElement.classList.contains('theme-dark') ? 'dark' : 'light';
+  });
+
+  React.useEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('theme-dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('theme-dark');
+      localStorage.setItem('theme', 'light');
+    }
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+  };
 
   const navItems = [
     { key: 'home', label: 'Home', img: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=400&q=80' },
@@ -64,6 +83,10 @@ export default function Header({ user, onLogout, setView, activeView }) {
           </nav>
 
           <div style={styles.authActions}>
+            <button className="theme-toggle-btn" onClick={toggleTheme} title="Toggle Theme">
+              {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+              <span>{theme === 'dark' ? 'Light' : 'Dark'}</span>
+            </button>
             {user ? (
               <div style={styles.userSection}>
                 <div style={styles.userInfo} onClick={() => handleNav('portal')}>

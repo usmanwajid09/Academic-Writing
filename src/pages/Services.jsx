@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { FileText, Award, BookOpen, Layers, Edit3, ArrowRight, Shield, Zap } from 'lucide-react';
 import VortexGallery from '../components/VortexGallery';
+import CitationGenerator from '../components/CitationGenerator';
 
 const SERVICES = [
   {
@@ -168,6 +169,11 @@ export default function Services({ setView }) {
             );
           })}
         </motion.div>
+      </section>
+
+      {/* Citation Generator Section */}
+      <section className="container" style={{ marginBottom: '80px' }}>
+        <CitationGenerator />
       </section>
 
       {/* Feature stats summary */}

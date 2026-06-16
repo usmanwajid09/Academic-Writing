@@ -120,20 +120,34 @@ export default function Calculator({ onOrderRedirect }) {
           </select>
         </div>
 
-        {/* Page quantity */}
-        <div className="form-group">
-          <label>Pages & Words</label>
-          <div style={styles.counterRow}>
+        {/* Page quantity slider */}
+        <div className="form-group" style={{ gridColumn: 'span 2' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+            <label style={{ fontWeight: '600', fontSize: '0.9rem', color: 'var(--text-main)', display: 'flex', gap: '6px', alignItems: 'center' }}><FileText size={16} /> Pages & Words</label>
+            <span style={{ fontWeight: '700', color: 'var(--primary)', fontSize: '0.9rem' }}>
+              {pages} Page{pages > 1 ? 's' : ''} ({pages * (spacing === 'single' ? 600 : 300)} words)
+            </span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             <button 
               type="button" 
               onClick={() => setPages(p => Math.max(1, p - 1))}
-              style={styles.counterBtn}
+              className="form-input"
+              style={{ width: '40px', padding: '8px', textAlign: 'center', cursor: 'pointer', fontWeight: 'bold' }}
             >-</button>
-            <span style={styles.counterValue}>{pages} Page{pages > 1 ? 's' : ''} ({pages * (spacing === 'single' ? 600 : 300)} words)</span>
+            <input 
+              type="range" 
+              min="1" 
+              max="100" 
+              value={pages} 
+              onChange={(e) => setPages(parseInt(e.target.value))} 
+              style={{ flex: 1, cursor: 'pointer', accentColor: 'var(--primary)', height: '8px', borderRadius: '4px' }}
+            />
             <button 
               type="button" 
-              onClick={() => setPages(p => p + 1)}
-              style={styles.counterBtn}
+              onClick={() => setPages(p => Math.min(100, p + 1))}
+              className="form-input"
+              style={{ width: '40px', padding: '8px', textAlign: 'center', cursor: 'pointer', fontWeight: 'bold' }}
             >+</button>
           </div>
         </div>
@@ -157,6 +171,19 @@ export default function Calculator({ onOrderRedirect }) {
           >
             Single Spacing (600 words/page)
           </button>
+        </div>
+      </div>
+
+      {/* Liquid Page-Count Price Gauge */}
+      <div className="gauge-container" style={{ margin: '20px 0' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', fontWeight: '600', color: 'var(--text-main)', marginBottom: '6px' }}>
+          <span>Order Volume Level:</span>
+          <span>{pages}% of Max Order Size</span>
+        </div>
+        <div className="liquid-gauge-outer">
+          <div className="liquid-fill" style={{ width: `${pages}%` }}>
+            <div className="liquid-fill-bubble" />
+          </div>
         </div>
       </div>
 
@@ -207,7 +234,7 @@ const styles = {
     margin: '0 auto',
     boxShadow: 'var(--shadow-lg)',
     borderTop: '5px solid var(--primary)',
-    backgroundColor: '#ffffff',
+    backgroundColor: 'var(--bg-card)',
   },
   cardHeader: {
     display: 'flex',

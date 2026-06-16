@@ -15,6 +15,15 @@ const AI_PHRASES = [
   "Hello, I would like to request a revision for the introduction section."
 ];
 
+const steps = ['pending', 'assigned', 'in_progress', 'review', 'completed'];
+const stepLabels = {
+  pending: 'Order Placed',
+  assigned: 'Writer Hired',
+  in_progress: 'Writing Phase',
+  review: 'QA Review',
+  completed: 'Completed'
+};
+
 export default function ManageOrders({ user, setView }) {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -145,6 +154,59 @@ export default function ManageOrders({ user, setView }) {
       alert(err.message);
     }
   };
+
+  // Hire Writer (Client Bidding Arena action)
+  const handleHireWriter = async (writerName, writerTitle) => {
+    if (!selectedOrder) return;
+    try {
+      // 1. Assign to default writer 2
+      await api.assignOrder(selectedOrder.id, 2);
+      // 2. Post welcome message from this writer
+      await api.sendMessage(selectedOrder.id, `Hi there! I am ${writerName} (${writerTitle}). I am thrilled to accept your project. I will begin researching the literature and preparing the structural draft outline right away! 📚✨`);
+      alert(`Success! You have hired ${writerName} for your project. They will begin work immediately.`);
+      loadOrders();
+      setSelectedOrder(null);
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
+  const handlePrintReceipt = () => {
+    window.print();
+  };
+
+  const mockBidders = selectedOrder ? [
+    {
+      id: 101,
+      name: 'Dr. Sarah Jenkins',
+      title: 'PhD in English Literature (Oxford)',
+      rating: '4.9',
+      ordersCount: 312,
+      price: selectedOrder.total_price,
+      avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&h=200&q=80',
+      recommended: true
+    },
+    {
+      id: 102,
+      name: 'Prof. Robert Miller',
+      title: 'Master of Economics & Stats (Harvard)',
+      rating: '4.8',
+      ordersCount: 245,
+      price: selectedOrder.total_price * 1.05,
+      avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=200&h=200&q=80',
+      recommended: false
+    },
+    {
+      id: 103,
+      name: 'Elena Rostova',
+      title: 'PhD in Bio-Chemistry (Stanford)',
+      rating: '4.95',
+      ordersCount: 189,
+      price: selectedOrder.total_price * 0.95,
+      avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=200&h=200&q=80',
+      recommended: false
+    }
+  ] : [];
 
   // Assign Writer (Admin Only)
   const handleAssignWriter = async () => {
@@ -310,7 +372,7 @@ export default function ManageOrders({ user, setView }) {
                 style={styles.detailCard}
               >
                 {/* Order Detail Header */}
-                <div style={styles.detailHeader}>
+                <div style={styles.detailHeader} className="no-print">
                   <div>
                     <span style={styles.detailOrderId}>Order #ORD-{selectedOrder.id}</span>
                     <h3 style={{ color: 'var(--text-main)', marginTop: '4px' }}>{selectedOrder.topic}</h3>
@@ -322,8 +384,38 @@ export default function ManageOrders({ user, setView }) {
                   </div>
                 </div>
 
+                {/* Milestone Stepper */}
+                {selectedOrder.status === 'cancelled' ? (
+                  <div style={{ background: '#fee2e2', color: '#991b1b', padding: '12px 20px', borderRadius: '8px', fontWeight: 'bold', margin: '20px 0', display: 'flex', alignItems: 'center', gap: '10px' }} className="no-print">
+                    <AlertCircle size={20} />
+                    This order has been cancelled.
+                  </div>
+                ) : (
+                  <div className="milestone-stepper no-print">
+                    <div 
+                      className="stepper-progress-line" 
+                      style={{ 
+                        width: `${selectedOrder.status === 'completed' ? 100 : (steps.indexOf(selectedOrder.status) / (steps.length - 1)) * 100}%` 
+                      }} 
+                    />
+                    {steps.map((step, idx) => {
+                      const activeStepIdx = steps.indexOf(selectedOrder.status);
+                      const isCompleted = idx < activeStepIdx || selectedOrder.status === 'completed';
+                      const isActive = idx === activeStepIdx;
+                      return (
+                        <div key={step} className={`step-node ${isActive ? 'active' : ''} ${isCompleted ? 'completed' : ''}`}>
+                          <div className="step-circle">
+                            {isCompleted ? '✓' : idx + 1}
+                          </div>
+                          <span className="step-label">{stepLabels[step]}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+
                 {/* Tabs navigation */}
-                <div style={styles.detailNav}>
+                <div style={styles.detailNav} className="no-print">
                   <button 
                     onClick={() => setDetailTab('info')}
                     style={detailTab === 'info' ? styles.detailNavActive : styles.detailNavBtn}
@@ -351,7 +443,7 @@ export default function ManageOrders({ user, setView }) {
                     animate={{ opacity: 1 }}
                     style={styles.tabPane}
                   >
-                    <div style={styles.infoGrid}>
+                    <div style={styles.infoGrid} className="no-print">
                       <div style={styles.infoItem}><span>Paper Type</span><strong>{selectedOrder.paper_type}</strong></div>
                       <div style={styles.infoItem}><span>Academic Level</span><strong style={{ textTransform: 'capitalize' }}>{selectedOrder.academic_level}</strong></div>
                       <div style={styles.infoItem}><span>Subject Field</span><strong>{selectedOrder.discipline}</strong></div>
@@ -364,15 +456,68 @@ export default function ManageOrders({ user, setView }) {
                       <div style={styles.infoItem}><span>Total Paid</span><strong style={{ color: 'var(--accent)' }}>${selectedOrder.total_price.toFixed(2)}</strong></div>
                     </div>
 
-                    <div style={styles.descBlock}>
+                    <div style={styles.descBlock} className="no-print">
                       <strong>Guidelines / Instructions:</strong>
                       <p style={{ marginTop: '8px', whiteSpace: 'pre-wrap' }}>
                         {selectedOrder.instructions || "No custom instructions provided."}
                       </p>
                     </div>
 
-                    {/* Actions based on role */}
-                    <div style={styles.actionsPanel}>
+                    {/* Hired Writer Profile Section */}
+                    {selectedOrder.writer_id && (
+                      <div style={{ background: 'var(--primary-light)', padding: '16px', borderRadius: '12px', border: '1px solid rgba(0, 122, 255, 0.1)', marginTop: '24px' }} className="no-print">
+                        <h4 style={{ color: 'var(--primary)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <User size={18} /> Assigned Writer Profile
+                        </h4>
+                        <p style={{ fontSize: '0.9rem', color: 'var(--text-main)', margin: 0 }}>
+                          Your paper is being written by <strong>John Writer (PhD)</strong>. You can message them directly in the <strong>Live Discussion</strong> tab above.
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Bidding Arena for client when order is pending */}
+                    {selectedOrder.status === 'pending' && user.role === 'client' && (
+                      <div style={{ marginTop: '32px', borderTop: '1px solid var(--border-light)', paddingTop: '24px' }} className="no-print">
+                        <h4 style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-main)', marginBottom: '6px' }}>
+                          <Sparkles size={20} color="var(--accent)" />
+                          Academic Writer Bidding Arena
+                        </h4>
+                        <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', marginBottom: '20px' }}>
+                          These verified PhD academic authors are bidding on your assignment details. Hire a writer to start working instantly.
+                        </p>
+                        
+                        <div className="bidding-grid">
+                          {mockBidders.map(bid => (
+                            <div key={bid.id} className={`bid-card ${bid.recommended ? 'recommended' : ''}`}>
+                              <img src={bid.avatar} alt={bid.name} className="bid-avatar" />
+                              <div className="bid-name">{bid.name}</div>
+                              <div className="bid-title">{bid.title}</div>
+                              <div className="bid-stats">
+                                <div className="bid-stat">
+                                  <span className="bid-stat-val">★ {bid.rating}</span>
+                                  <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>Rating</span>
+                                </div>
+                                <div className="bid-stat">
+                                  <span className="bid-stat-val">{bid.ordersCount}</span>
+                                  <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>Papers Done</span>
+                                </div>
+                              </div>
+                              <div className="bid-price">${bid.price.toFixed(2)}</div>
+                              <button 
+                                className="btn-accent" 
+                                style={{ width: '100%', padding: '10px' }}
+                                onClick={() => handleHireWriter(bid.name, bid.title)}
+                              >
+                                Hire Writer
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Actions panel */}
+                    <div style={styles.actionsPanel} className="no-print">
                       {/* Admin assignment controls */}
                       {user.role === 'admin' && (
                         <div style={styles.adminAssignBlock}>
@@ -428,6 +573,17 @@ export default function ManageOrders({ user, setView }) {
                           </div>
                         </div>
                       )}
+
+                      {/* Printable Invoice Actions */}
+                      <div style={{ marginTop: '24px', display: 'flex', gap: '12px', width: '100%', justifyContent: 'flex-start', borderTop: '1px solid var(--border-light)', paddingTop: '20px' }}>
+                        <button 
+                          className="btn-secondary" 
+                          onClick={handlePrintReceipt}
+                          style={{ padding: '8px 20px', fontSize: '0.85rem' }}
+                        >
+                          🖨️ Print Invoice Receipt
+                        </button>
+                      </div>
                     </div>
                   </motion.div>
                 )}
@@ -466,50 +622,57 @@ export default function ManageOrders({ user, setView }) {
                     {/* Upload new file form */}
                     <form onSubmit={handleFileUploadSubmit} style={styles.uploadForm}>
                       <strong style={{ display: 'block', marginBottom: '12px' }}>Upload New Attachment</strong>
-                      <div style={styles.uploadGrid}>
-                        <div className="form-group" style={{ flex: 1 }}>
-                          <label>File Type classification</label>
-                          <select 
-                            value={uploadType} 
-                            onChange={(e) => setUploadType(e.target.value)} 
-                            className="form-input"
-                          >
-                            {user.role === 'client' && <option value="instruction">Instruction Document</option>}
-                            {user.role === 'writer' && (
-                              <>
-                                <option value="draft">Draft Copy</option>
-                                <option value="final">Final Essay Delivery</option>
-                              </>
-                            )}
-                            {user.role === 'admin' && (
-                              <>
-                                <option value="instruction">Instruction Document</option>
-                                <option value="draft">Draft Copy</option>
-                                <option value="final">Final Essay Delivery</option>
-                              </>
-                            )}
-                          </select>
-                        </div>
-
-                        <div className="form-group" style={{ flex: 2 }}>
-                          <label>Select File</label>
-                          <input 
-                            type="file" 
-                            required 
-                            onChange={(e) => setUploadFile(e.target.files[0])} 
-                            className="form-input" 
-                          />
-                        </div>
+                      
+                      <div className="form-group" style={{ marginBottom: '16px' }}>
+                        <label>File Type Classification</label>
+                        <select 
+                          value={uploadType} 
+                          onChange={(e) => setUploadType(e.target.value)} 
+                          className="form-input"
+                        >
+                          {user.role === 'client' && <option value="instruction">Instruction Document</option>}
+                          {user.role === 'writer' && (
+                            <>
+                              <option value="draft">Draft Copy</option>
+                              <option value="final">Final Essay Delivery</option>
+                            </>
+                          )}
+                          {user.role === 'admin' && (
+                            <>
+                              <option value="instruction">Instruction Document</option>
+                              <option value="draft">Draft Copy</option>
+                              <option value="final">Final Essay Delivery</option>
+                            </>
+                          )}
+                        </select>
                       </div>
 
-                      <button 
-                        type="submit" 
-                        className="btn-primary" 
-                        disabled={uploadLoading}
-                        style={{ width: '180px', justifyContent: 'center', marginTop: '12px' }}
-                      >
-                        {uploadLoading ? 'Uploading...' : 'Upload File'}
-                      </button>
+                      <div className="upload-zone" onClick={() => document.getElementById('dashboard-file-upload').click()}>
+                        <UploadCloud size={36} color="var(--primary)" style={{ marginBottom: '8px' }} />
+                        <p style={{ fontWeight: '600', fontSize: '0.9rem', margin: '0 0 4px 0' }}>Click to select a document from your computer</p>
+                        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Supported formats: PDF, Word, Excel, ZIP (Max 10MB)</span>
+                      </div>
+                      <input 
+                        type="file" 
+                        id="dashboard-file-upload" 
+                        required 
+                        style={{ display: 'none' }}
+                        onChange={(e) => setUploadFile(e.target.files[0])} 
+                      />
+
+                      {uploadFile && (
+                        <div style={{ marginTop: '16px', background: 'var(--primary-light)', padding: '12px 16px', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span style={{ fontSize: '0.88rem', fontWeight: '600', color: 'var(--primary)' }}>Selected: {uploadFile.name}</span>
+                          <button 
+                            type="submit" 
+                            className="btn-primary" 
+                            disabled={uploadLoading}
+                            style={{ padding: '8px 20px', fontSize: '0.85rem' }}
+                          >
+                            {uploadLoading ? 'Uploading...' : 'Confirm Upload'}
+                          </button>
+                        </div>
+                      )}
                     </form>
                   </motion.div>
                 )}
@@ -634,6 +797,82 @@ export default function ManageOrders({ user, setView }) {
           </AnimatePresence>
         </div>
       </div>
+
+      {/* Printable Invoice Receipt for window.print() */}
+      {selectedOrder && (
+        <div className="printable-invoice" style={{ display: 'none' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '2px solid #000', paddingBottom: '16px', marginBottom: '24px' }}>
+            <div>
+              <h1 style={{ fontSize: '2rem', margin: 0 }}>Academia Writing Services</h1>
+              <p style={{ margin: '4px 0 0 0', color: '#555' }}>Premium Custom Academic Solutions</p>
+            </div>
+            <div style={{ textAlign: 'right' }}>
+              <h2 style={{ margin: 0, color: '#333' }}>INVOICE RECEIPT</h2>
+              <p style={{ margin: '4px 0 0 0' }}>Invoice #: <strong>INV-ORD-{selectedOrder.id}</strong></p>
+              <p style={{ margin: '2px 0 0 0' }}>Date: {new Date(selectedOrder.created_at || Date.now()).toLocaleDateString()}</p>
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px', marginBottom: '32px' }}>
+            <div>
+              <h4 style={{ margin: '0 0 8px 0', textTransform: 'uppercase', color: '#555' }}>Billed To:</h4>
+              <strong>{user.name}</strong>
+              <p style={{ margin: '4px 0 0 0' }}>{user.email}</p>
+              {user.phone && <p style={{ margin: '2px 0 0 0' }}>Phone: {user.phone}</p>}
+            </div>
+            <div>
+              <h4 style={{ margin: '0 0 8px 0', textTransform: 'uppercase', color: '#555' }}>Order Details:</h4>
+              <p style={{ margin: '0' }}>Discipline: <strong>{selectedOrder.discipline}</strong></p>
+              <p style={{ margin: '4px 0 0 0' }}>Academic Level: <strong>{selectedOrder.academic_level}</strong></p>
+              <p style={{ margin: '4px 0 0 0' }}>Format style: <strong>{selectedOrder.format}</strong></p>
+            </div>
+          </div>
+
+          <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '32px' }}>
+            <thead>
+              <tr style={{ borderBottom: '2px solid #000' }}>
+                <th style={{ textAlign: 'left', padding: '8px 0' }}>Description</th>
+                <th style={{ textAlign: 'center', padding: '8px 0' }}>Quantity</th>
+                <th style={{ textAlign: 'right', padding: '8px 0' }}>Unit Rate</th>
+                <th style={{ textAlign: 'right', padding: '8px 0' }}>Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style={{ borderBottom: '1px solid #ddd' }}>
+                <td style={{ padding: '12px 0' }}>
+                  <strong>{selectedOrder.paper_type} Writing Service</strong><br />
+                  Topic: "{selectedOrder.topic}"<br />
+                  Spacing: {selectedOrder.spacing} spacing
+                </td>
+                <td style={{ textAlign: 'center', padding: '12px 0' }}>{selectedOrder.page_qty} Page(s)</td>
+                <td style={{ textAlign: 'right', padding: '12px 0' }}>${(selectedOrder.total_price / selectedOrder.page_qty).toFixed(2)}</td>
+                <td style={{ textAlign: 'right', padding: '12px 0' }}>${selectedOrder.total_price.toFixed(2)}</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <div style={{ width: '250px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid #ddd' }}>
+                <span>Subtotal:</span>
+                <span>${selectedOrder.total_price.toFixed(2)}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid #ddd' }}>
+                <span>Tax / Fees:</span>
+                <span>$0.00</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', fontWeight: 'bold', fontSize: '1.1rem' }}>
+                <span>Total Paid:</span>
+                <span>${selectedOrder.total_price.toFixed(2)}</span>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ borderTop: '1px solid #ccc', marginTop: '40px', paddingTop: '16px', textAlign: 'center', fontSize: '0.85rem', color: '#666' }}>
+            Thank you for choosing Academia Writing. Your satisfaction is our top priority. For support, contact admin@academic.com.
+          </div>
+        </div>
+      )}
 
       <BoldTextAIPlugin 
         isOpen={boldtextPluginOpen} 
