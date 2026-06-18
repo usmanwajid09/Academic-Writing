@@ -1,5 +1,6 @@
 import React from 'react';
-import { BookOpen, Copy, Check } from 'lucide-react';
+import { BookOpen, Copy, Check, Plus } from 'lucide-react';
+import ReferenceShelf from './ReferenceShelf';
 
 export default function CitationGenerator() {
   const [sourceType, setSourceType] = React.useState('book');
@@ -11,6 +12,34 @@ export default function CitationGenerator() {
   
   const [activeStyle, setActiveStyle] = React.useState('APA');
   const [copied, setCopied] = React.useState(false);
+  const [addedToShelf, setAddedToShelf] = React.useState(false);
+  const [refreshTrigger, setRefreshTrigger] = React.useState(0);
+
+  const handleAddToShelf = () => {
+    try {
+      const newRef = {
+        id: Date.now().toString(),
+        author: author || 'Author Name',
+        title: title || 'Untitled',
+        publisher: publisher || 'Publisher',
+        year: year || new Date().getFullYear().toString(),
+        style: activeStyle,
+        sourceType: sourceType,
+        formatted: getCitation()
+      };
+
+      const stored = localStorage.getItem('academic_references');
+      const references = stored ? JSON.parse(stored) : [];
+      references.push(newRef);
+      localStorage.setItem('academic_references', JSON.stringify(references));
+
+      setAddedToShelf(true);
+      setRefreshTrigger(prev => prev + 1);
+      setTimeout(() => setAddedToShelf(false), 2000);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const formatAuthorName = (name) => {
     if (!name) return 'Author, A. N.';
@@ -166,14 +195,28 @@ export default function CitationGenerator() {
             __html: getCitation().replace(/\*(.*?)\*/g, '<em>$1</em>') 
           }} 
         />
-        <button 
-          className="citation-copy-btn"
-          onClick={handleCopy}
-          title="Copy to Clipboard"
-        >
-          {copied ? <Check size={16} color="var(--accent)" /> : <Copy size={16} />}
-        </button>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <button 
+            className="citation-copy-btn"
+            onClick={handleCopy}
+            title="Copy to Clipboard"
+            style={{ width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          >
+            {copied ? <Check size={16} color="var(--accent)" /> : <Copy size={16} />}
+          </button>
+          <button 
+            className="citation-copy-btn"
+            onClick={handleAddToShelf}
+            title="Add to Reference Shelf"
+            style={{ width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: addedToShelf ? 'var(--accent)' : 'inherit' }}
+          >
+            {addedToShelf ? <Check size={16} color="var(--accent)" /> : <Plus size={16} />}
+          </button>
+        </div>
       </div>
+
+      {/* Visual 3D Bookshelf */}
+      <ReferenceShelf refreshTrigger={refreshTrigger} />
     </div>
   );
 }

@@ -3,9 +3,11 @@ import { api } from '../api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   FileText, MessageSquare, Download, UploadCloud, RefreshCw, Send, CheckCircle, 
-  Clock, AlertCircle, Sparkles, User, Briefcase, PlusCircle, Paperclip, Wand2
+  Clock, AlertCircle, Sparkles, User, Briefcase, PlusCircle, Paperclip, Wand2,
+  ShieldCheck, Check
 } from 'lucide-react';
 import BoldTextAIPlugin from '../components/BoldTextAIPlugin';
+import PlagiarismInspector from '../components/PlagiarismInspector';
 
 const AI_PHRASES = [
   "Hi, could you please provide a status update on the draft?",
@@ -23,6 +25,315 @@ const stepLabels = {
   review: 'QA Review',
   completed: 'Completed'
 };
+
+function CountdownTimer({ createdAt, deadlineKey }) {
+  const [timeLeft, setTimeLeft] = useState(null);
+
+  const DEADLINE_DURATIONS = {
+    '14d': 14 * 24 * 60 * 60 * 1000,
+    '7d': 7 * 24 * 60 * 60 * 1000,
+    '5d': 5 * 24 * 60 * 60 * 1000,
+    '3d': 3 * 24 * 60 * 60 * 1000,
+    '2d': 2 * 24 * 60 * 60 * 1000,
+    '24h': 24 * 60 * 60 * 1000,
+    '8h': 8 * 60 * 60 * 1000
+  };
+
+  const getTargetDate = () => {
+    if (!createdAt) return new Date();
+    let formatStr = createdAt;
+    if (!createdAt.includes('T') && createdAt.includes(' ')) {
+      formatStr = createdAt.replace(' ', 'T') + 'Z';
+    }
+    const createdDate = new Date(Date.parse(formatStr) || Date.parse(createdAt));
+    const duration = DEADLINE_DURATIONS[deadlineKey] || 3 * 24 * 60 * 60 * 1000;
+    return new Date(createdDate.getTime() + duration);
+  };
+
+  useEffect(() => {
+    const targetDate = getTargetDate();
+    const totalDuration = DEADLINE_DURATIONS[deadlineKey] || 3 * 24 * 60 * 60 * 1000;
+
+    const interval = setInterval(() => {
+      const now = new Date();
+      const difference = targetDate.getTime() - now.getTime();
+
+      if (difference <= 0) {
+        setTimeLeft({ hours: 0, minutes: 0, seconds: 0, ms: 0, percent: 100, isOverdue: true });
+        clearInterval(interval);
+      } else {
+        const hours = Math.floor(difference / (1000 * 60 * 60));
+        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+        const ms = Math.floor((difference % 1000) / 10);
+        
+        const timeElapsed = totalDuration - difference;
+        const percent = Math.min(100, Math.max(0, (timeElapsed / totalDuration) * 100));
+
+        setTimeLeft({ hours, minutes, seconds, ms, percent, isOverdue: false });
+      }
+    }, 45);
+
+    return () => clearInterval(interval);
+  }, [createdAt, deadlineKey]);
+
+  if (!timeLeft) return null;
+
+  const radius = 35;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset = circumference - (timeLeft.percent / 100) * circumference;
+
+  return (
+    <div className="countdown-header-card no-print">
+      <div className="countdown-flex">
+        <div className="countdown-gauge">
+          <svg width="86" height="86">
+            <circle
+              cx="43"
+              cy="43"
+              r={radius}
+              fill="transparent"
+              stroke="var(--border-light)"
+              strokeWidth="5"
+            />
+            <circle
+              cx="43"
+              cy="43"
+              r={radius}
+              fill="transparent"
+              stroke="var(--accent)"
+              strokeWidth="5"
+              strokeDasharray={circumference}
+              strokeDashoffset={strokeDashoffset}
+              strokeLinecap="round"
+              className="countdown-svg-circle"
+            />
+          </svg>
+          <div style={{ position: 'absolute', fontSize: '0.75rem', fontWeight: '800', color: 'var(--text-muted)' }}>
+            {Math.round(timeLeft.percent)}%
+          </div>
+        </div>
+
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
+            <span className="pulse-heartbeat" style={{ backgroundColor: timeLeft.isOverdue ? '#ef4444' : 'var(--accent)' }} />
+            <strong style={{ fontSize: '0.92rem', color: 'var(--text-main)' }}>
+              {timeLeft.isOverdue ? 'Linguistic Editing & Review' : 'Live Delivery Countdown'}
+            </strong>
+          </div>
+          
+          <div className="countdown-numerical">
+            {timeLeft.hours.toString().padStart(2, '0')}h : {timeLeft.minutes.toString().padStart(2, '0')}m : {timeLeft.seconds.toString().padStart(2, '0')}s : <span className="countdown-ms">{timeLeft.ms.toString().padStart(2, '0')}ms</span>
+          </div>
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+            {timeLeft.isOverdue ? 'Paper is being formatted and checked for Turnitin similarity.' : 'Vetted writer is actively drafting your academic solutions.'}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const VOCAB_REPLACEMENTS = [
+  { word: 'bad', options: ['detrimental', 'adverse', 'deleterious', 'suboptimal'] },
+  { word: 'get', options: ['acquire', 'obtain', 'derive', 'procure'] },
+  { word: 'important', options: ['paramount', 'significant', 'imperative', 'critical'] },
+  { word: 'big', options: ['substantial', 'considerable', 'monumental', 'vast'] },
+  { word: 'show', options: ['demonstrate', 'illustrate', 'exemplify', 'evince'] },
+  { word: 'good', options: ['advantageous', 'exemplary', 'efficacious', 'propitious'] }
+];
+
+const MOCK_OUTLINES = [
+  {
+    title: 'I. Abstract & Introduction',
+    desc: 'Formulate research problem, thesis statements, and methodology outline.',
+    tasks: ['Draft academic abstract', 'State study objectives', 'Refine core thesis statement']
+  },
+  {
+    title: 'II. Literature Review & Theory',
+    desc: 'Evaluate peer-reviewed articles, synthesize gaps, outline academic framework.',
+    tasks: ['Locate 3 high-impact journal references', 'Synthesize key literature arguments', 'Refine theoretical framework']
+  },
+  {
+    title: 'III. Methodology & Data Analysis',
+    desc: 'Outline research methodology, data collection, sample sizes, and limits.',
+    tasks: ['Confirm quantitative sample limits', 'Explain logical methodology', 'Verify statistical tools']
+  },
+  {
+    title: 'IV. Findings & Academic Review',
+    desc: 'Interpret primary results, discuss academic limitations, verify formatting.',
+    tasks: ['Verify APA/MLA bibliography formatting', 'Draft conclusion & policy impacts', 'Run Turnitin similarity checks']
+  }
+];
+
+function WriterAIWorkspace({ order }) {
+  const [outlineGenerated, setOutlineGenerated] = useState(false);
+  const [outlineProgress, setOutlineProgress] = useState({});
+  const [polisherWord, setPolisherWord] = useState('');
+  const [polisherOptions, setPolisherOptions] = useState([]);
+  const [polishingApplied, setPolishingApplied] = useState(false);
+
+  const getTaskKey = (cardIdx, taskIdx) => `${order.id}-${cardIdx}-${taskIdx}`;
+
+  const toggleTask = (cardIdx, taskIdx) => {
+    const key = getTaskKey(cardIdx, taskIdx);
+    setOutlineProgress(prev => ({
+      ...prev,
+      [key]: !prev[key]
+    }));
+  };
+
+  const getProgressStats = () => {
+    if (!outlineGenerated) return 0;
+    let total = 0;
+    let checked = 0;
+    MOCK_OUTLINES.forEach((card, cardIdx) => {
+      card.tasks.forEach((_, taskIdx) => {
+        total++;
+        if (outlineProgress[getTaskKey(cardIdx, taskIdx)]) {
+          checked++;
+        }
+      });
+    });
+    return Math.round((checked / total) * 100);
+  };
+
+  const handleWordPolish = (item) => {
+    setPolisherWord(item.word);
+    setPolisherOptions(item.options);
+    setPolishingApplied(false);
+  };
+
+  const handleSynonymClick = (synonym) => {
+    navigator.clipboard.writeText(synonym);
+    setPolishingApplied(synonym);
+  };
+
+  const progress = getProgressStats();
+
+  return (
+    <div className="outline-workspace-box no-print">
+      <h4 style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-main)', margin: '0 0 4px 0', fontSize: '1rem' }}>
+        <Sparkles size={20} color="var(--accent)" />
+        Writer's AI Outline & Draft Architect
+      </h4>
+      <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '16px' }}>
+        Generate structural essay blueprints and use academic vocabulary polishers.
+      </p>
+
+      {!outlineGenerated ? (
+        <button 
+          className="btn-accent" 
+          onClick={() => setOutlineGenerated(true)}
+          style={{ width: '100%', padding: '12px', justifyContent: 'center' }}
+        >
+          ⚡ Generate Structural Outline Blueprint
+        </button>
+      ) : (
+        <div>
+          <div style={{ background: 'var(--border-light)', height: '8px', borderRadius: '4px', position: 'relative', overflow: 'hidden', marginBottom: '20px' }}>
+            <div 
+              style={{ 
+                width: `${progress}%`, 
+                height: '100%', 
+                background: 'linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%)',
+                transition: 'width 0.4s ease'
+              }} 
+            />
+          </div>
+
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+            <span style={{ fontSize: '0.88rem', color: 'var(--text-muted)' }}>
+              Outline Milestone Progress: <strong style={{ color: 'var(--text-main)' }}>{progress}%</strong>
+            </span>
+            {progress === 100 && (
+              <span style={{ color: '#10b981', fontSize: '0.85rem', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <Check size={16} /> All milestones completed!
+              </span>
+            )}
+          </div>
+
+          <div className="outline-cards-grid">
+            {MOCK_OUTLINES.map((card, cardIdx) => (
+              <div key={cardIdx} className="outline-card-node">
+                <h5 style={{ margin: '0 0 6px 0', fontSize: '0.9rem', color: 'var(--text-main)', fontWeight: '700' }}>
+                  {card.title}
+                </h5>
+                <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '0 0 12px 0', lineHeight: '1.4' }}>
+                  {card.desc}
+                </p>
+                {card.tasks.map((task, taskIdx) => {
+                  const key = getTaskKey(cardIdx, taskIdx);
+                  const isChecked = !!outlineProgress[key];
+                  return (
+                    <label key={taskIdx} className="outline-checklist-item">
+                      <input 
+                        type="checkbox" 
+                        className="outline-checkbox"
+                        checked={isChecked}
+                        onChange={() => toggleTask(cardIdx, taskIdx)}
+                      />
+                      <span style={{ textDecoration: isChecked ? 'line-through' : 'none', color: isChecked ? 'var(--text-muted)' : 'var(--text-main)' }}>
+                        {task}
+                      </span>
+                    </label>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
+
+          <div className="vocab-polisher-box">
+            <h5 style={{ margin: '0 0 4px 0', fontSize: '0.9rem', color: 'var(--primary)', fontWeight: '700' }}>
+              🔬 Academic Vocabulary Polisher
+            </h5>
+            <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: 0 }}>
+              Select a common word to view recommended formal, academic synonyms to elevate the paper's reading complexity.
+            </p>
+
+            <div className="vocab-tags-flex">
+              {VOCAB_REPLACEMENTS.map(item => (
+                <button 
+                  key={item.word} 
+                  className="vocab-tag-btn"
+                  onClick={() => handleWordPolish(item)}
+                  style={{ borderColor: polisherWord === item.word ? 'var(--primary)' : 'var(--border-light)' }}
+                >
+                  "{item.word}"
+                </button>
+              ))}
+            </div>
+
+            {polisherWord && (
+              <div style={{ marginTop: '12px', background: 'var(--bg-card)', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-light)', animation: 'slideUp 0.3s ease' }}>
+                <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+                  Synonyms for <strong style={{ color: 'var(--text-main)' }}>"{polisherWord}"</strong> (Click to copy):
+                </span>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '6px' }}>
+                  {polisherOptions.map(opt => (
+                    <button 
+                      key={opt}
+                      onClick={() => handleSynonymClick(opt)}
+                      className="vocab-tag-btn"
+                      style={{ padding: '4px 10px', fontSize: '0.75rem', background: polishingApplied === opt ? 'var(--accent)' : 'var(--bg-card)', color: polishingApplied === opt ? 'white' : 'var(--text-main)', borderColor: polishingApplied === opt ? 'var(--accent)' : 'var(--border-light)' }}
+                    >
+                      {opt}
+                    </button>
+                  ))}
+                </div>
+                {polishingApplied && (
+                  <p style={{ fontSize: '0.75rem', color: '#10b981', margin: '8px 0 0 0', fontWeight: '600' }}>
+                    ✔ Copied "{polishingApplied}" to clipboard.
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function ManageOrders({ user, setView, onLoginSuccess }) {
   const [orders, setOrders] = useState([]);
@@ -582,6 +893,12 @@ export default function ManageOrders({ user, setView, onLoginSuccess }) {
                   >
                     Live Discussion
                   </button>
+                  <button 
+                    onClick={() => setDetailTab('plagiarism')}
+                    style={detailTab === 'plagiarism' ? styles.detailNavActive : styles.detailNavBtn}
+                  >
+                    Originality Inspector
+                  </button>
                 </div>
 
                 {/* TAB CONTENT: GENERAL INFO */}
@@ -591,6 +908,12 @@ export default function ManageOrders({ user, setView, onLoginSuccess }) {
                     animate={{ opacity: 1 }}
                     style={styles.tabPane}
                   >
+                    {selectedOrder.status !== 'completed' && selectedOrder.status !== 'cancelled' && (
+                      <CountdownTimer 
+                        createdAt={selectedOrder.created_at} 
+                        deadlineKey={selectedOrder.deadline_date} 
+                      />
+                    )}
                     <div style={styles.infoGrid} className="no-print">
                       <div style={styles.infoItem}><span>Paper Type</span><strong>{selectedOrder.paper_type}</strong></div>
                       <div style={styles.infoItem}><span>Academic Level</span><strong style={{ textTransform: 'capitalize' }}>{selectedOrder.academic_level}</strong></div>
@@ -621,6 +944,11 @@ export default function ManageOrders({ user, setView, onLoginSuccess }) {
                           Your paper is being written by <strong>John Writer (PhD)</strong>. You can message them directly in the <strong>Live Discussion</strong> tab above.
                         </p>
                       </div>
+                    )}
+
+                    {/* Writer AI Workspace Outline Architect */}
+                    {selectedOrder.writer_id && ((user.role === 'writer' && selectedOrder.writer_id === user.id) || user.role === 'admin') && (
+                      <WriterAIWorkspace order={selectedOrder} />
                     )}
 
                     {/* Bidding Arena for client when order is pending */}
@@ -925,6 +1253,23 @@ export default function ManageOrders({ user, setView, onLoginSuccess }) {
                         <Send size={16} /> Send
                       </button>
                     </form>
+                  </motion.div>
+                )}
+
+                {/* TAB CONTENT: ORIGINALITY INSPECTOR */}
+                {detailTab === 'plagiarism' && (
+                  <motion.div 
+                    initial={{ opacity: 0 }} 
+                    animate={{ opacity: 1 }}
+                    style={styles.tabPane}
+                  >
+                    <PlagiarismInspector defaultText={
+`An Analysis of "${selectedOrder.topic}"
+
+This paper examines the key structural elements of "${selectedOrder.topic}". The implications of generative AI tools on academic writing courses. Focus on both the challenges (plagiarism risks) and opportunities (brainstorming, grammar checking) for undergraduate students.
+
+In modern higher education, the integration of these models has created a dual paradigm. While educators express concern over plagiarism, researchers note that brainstorming and grammatical polishing can substantially improve students' critical analysis. This study discusses both viewpoints.`
+                    } />
                   </motion.div>
                 )}
               </motion.div>

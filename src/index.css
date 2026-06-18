@@ -1657,3 +1657,448 @@ p {
     display: none !important;
   }
 }
+
+/* ==========================================================================
+   PHASE 3 PREMIUM FEATURES STYLING
+   ========================================================================== */
+
+/* 1. 3D Bookshelf & Reference Shelf */
+.bookshelf-wrapper {
+  margin: 40px auto;
+  max-width: 700px;
+  width: 100%;
+  perspective: 1000px;
+  padding: 20px;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-lg);
+}
+
+.bookshelf-3d {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 8px;
+  height: 260px;
+  padding: 0 20px 10px 20px;
+  position: relative;
+  transform-style: preserve-3d;
+  margin-bottom: 24px;
+}
+
+.shelf-plank {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 16px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0.1) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(8px);
+}
+
+.book-spine-3d {
+  width: 44px;
+  height: 200px;
+  border-radius: 4px 4px 0 0;
+  position: relative;
+  cursor: pointer;
+  transform-style: preserve-3d;
+  transform-origin: bottom center;
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.3s;
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.4);
+}
+
+/* 3D hover interactions */
+.book-spine-3d:hover {
+  transform: perspective(600px) translateZ(30px) rotateY(-15deg) translateY(-8px);
+  filter: brightness(1.1);
+  box-shadow: -10px 15px 20px rgba(0, 0, 0, 0.5);
+  z-index: 10;
+}
+
+.book-spine-3d.active {
+  transform: perspective(600px) translateZ(45px) rotateY(-20deg) translateY(-12px);
+  filter: brightness(1.2);
+  box-shadow: -15px 20px 25px rgba(0, 0, 0, 0.6);
+  z-index: 15;
+}
+
+.book-label {
+  position: absolute;
+  top: 15px;
+  left: 0;
+  right: 0;
+  bottom: 15px;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  text-align: center;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: #ffffff;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.book-style-tag {
+  font-size: 0.62rem;
+  opacity: 0.8;
+  font-weight: 800;
+}
+
+/* Book color presets */
+.book-spine-apa {
+  background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+  border-left: 3px solid rgba(255, 255, 255, 0.25);
+  border-right: 1px solid rgba(0, 0, 0, 0.2);
+}
+.book-spine-mla {
+  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+  border-left: 3px solid rgba(255, 255, 255, 0.25);
+  border-right: 1px solid rgba(0, 0, 0, 0.2);
+}
+.book-spine-harvard {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  border-left: 3px solid rgba(255, 255, 255, 0.25);
+  border-right: 1px solid rgba(0, 0, 0, 0.2);
+}
+.book-spine-chicago {
+  background: linear-gradient(135deg, #f43f5e 0%, #be123c 100%);
+  border-left: 3px solid rgba(255, 255, 255, 0.25);
+  border-right: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.book-detail-popup {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  margin-top: 15px;
+  box-shadow: var(--shadow-md);
+  animation: slideUp 0.3s ease;
+}
+
+/* 2. Plagiarism Inspector & Radar Scan */
+.plagiarism-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.radar-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-light);
+  min-height: 300px;
+}
+
+.radar-circle {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: rgba(99, 102, 241, 0.03);
+  border: 2px solid rgba(99, 102, 241, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+
+.radar-circle::before {
+  content: '';
+  position: absolute;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  border: 1px dashed rgba(99, 102, 241, 0.25);
+}
+
+.radar-circle::after {
+  content: '';
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+.radar-sweep {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: conic-gradient(from 0deg at 50% 50%, rgba(99, 102, 241, 0.4) 0deg, rgba(99, 102, 241, 0) 90deg);
+  border-radius: 50%;
+  animation: radarRotate 2.5s linear infinite;
+  transform-origin: center;
+}
+
+.radar-pulse-dot {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: var(--accent);
+  border-radius: 50%;
+  box-shadow: 0 0 12px var(--accent);
+  animation: pulseHighlight 1.5s infinite;
+}
+
+/* Plagiarism Split Layout */
+.plagi-split {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 768px) {
+  .plagi-split {
+    grid-template-columns: 1fr;
+  }
+}
+
+.heatmap-editor {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+  max-height: 520px;
+  overflow-y: auto;
+}
+
+.similarity-sources {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: 520px;
+  overflow-y: auto;
+}
+
+.source-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.source-card:hover, .source-card.active {
+  border-color: var(--primary);
+  background: rgba(99, 102, 241, 0.02);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.match-high {
+  background: rgba(239, 68, 68, 0.16);
+  border-bottom: 2px solid #ef4444;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  padding: 2px 0;
+}
+.match-high:hover {
+  background: rgba(239, 68, 68, 0.28);
+}
+.match-high.selected {
+  background: rgba(239, 68, 68, 0.4);
+}
+
+.match-med {
+  background: rgba(245, 158, 11, 0.16);
+  border-bottom: 2px solid #f59e0b;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  padding: 2px 0;
+}
+.match-med:hover {
+  background: rgba(245, 158, 11, 0.28);
+}
+.match-med.selected {
+  background: rgba(245, 158, 11, 0.4);
+}
+
+/* 3. Circular Live Countdown Timer Widget */
+.countdown-header-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, var(--bg-card) 0%, rgba(99, 102, 241, 0.03) 100%);
+  border: 1px solid var(--border-light);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+}
+
+.countdown-flex {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.countdown-gauge {
+  position: relative;
+  width: 90px;
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.countdown-svg-circle {
+  transform: rotate(-90deg);
+  transform-origin: center;
+  transition: stroke-dashoffset 0.1s linear;
+}
+
+.countdown-numerical {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-main);
+  letter-spacing: 1px;
+}
+
+.countdown-ms {
+  font-size: 0.95rem;
+  color: var(--accent);
+  opacity: 0.85;
+}
+
+.pulse-heartbeat {
+  width: 10px;
+  height: 10px;
+  background-color: var(--accent);
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 8px;
+  box-shadow: 0 0 8px var(--accent);
+  animation: beaconPulse 1.8s infinite;
+}
+
+/* 4. Writer AI Outline Architect Workspace */
+.outline-workspace-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: 16px;
+  padding: 24px;
+  margin-top: 32px;
+  box-shadow: var(--shadow-md);
+}
+
+.outline-cards-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+@media (max-width: 768px) {
+  .outline-cards-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.outline-card-node {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 18px;
+  transition: all 0.3s;
+}
+
+.outline-card-node:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+.outline-checklist-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.88rem;
+  margin-top: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.outline-checkbox {
+  margin-top: 3px;
+  cursor: pointer;
+}
+
+.vocab-polisher-box {
+  background: var(--primary-light);
+  border: 1px solid rgba(0, 122, 255, 0.1);
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 24px;
+}
+
+.vocab-tags-flex {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.vocab-tag-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--text-main);
+}
+
+.vocab-tag-btn:hover {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: #ffffff;
+}
+
+/* Animations */
+@keyframes radarRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulseHighlight {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.6); opacity: 0.6; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes beaconPulse {
+  0% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.7); }
+  70% { transform: scale(1.2); box-shadow: 0 0 0 8px rgba(236, 72, 153, 0); }
+  100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(236, 72, 153, 0); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
