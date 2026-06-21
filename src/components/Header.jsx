@@ -1,29 +1,15 @@
 import React from 'react';
-import { GraduationCap, LogOut, User, Menu, X, Sun, Moon } from 'lucide-react';
+import { GraduationCap, LogOut, User, Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Header({ user, onLogout, setView, activeView, setPortalAuthMode }) {
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [fullscreenOpen, setFullscreenOpen] = React.useState(false);
-  const [theme, setTheme] = React.useState(() => {
-    const saved = localStorage.getItem('theme');
-    if (saved) return saved;
-    return document.documentElement.classList.contains('theme-dark') ? 'dark' : 'light';
-  });
 
   React.useEffect(() => {
-    if (theme === 'dark') {
-      document.documentElement.classList.add('theme-dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('theme-dark');
-      localStorage.setItem('theme', 'light');
-    }
-  }, [theme]);
-
-  const toggleTheme = () => {
-    setTheme(prev => prev === 'dark' ? 'light' : 'dark');
-  };
+    document.documentElement.classList.remove('theme-dark');
+    localStorage.removeItem('theme');
+  }, []);
 
   const navItems = [
     { key: 'home', label: 'Home' },
@@ -79,10 +65,6 @@ export default function Header({ user, onLogout, setView, activeView, setPortalA
           </nav>
 
           <div style={styles.authActions}>
-            <button className="theme-toggle-btn" onClick={toggleTheme} title="Toggle Theme">
-              {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
-              <span>{theme === 'dark' ? 'Light' : 'Dark'}</span>
-            </button>
             {user ? (
               <div style={styles.userSection}>
                 <div style={styles.userInfo} onClick={() => handleNav('portal')}>

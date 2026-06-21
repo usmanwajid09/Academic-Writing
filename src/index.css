@@ -41,24 +41,7 @@
   --theme-transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Dark Mode Overrides */
-html.theme-dark {
-  --text-main: #f3f4f6;
-  --text-muted: #9ca3af;
-  --border-light: rgba(255, 255, 255, 0.08);
-  --bg-main: #090d16;
-  --bg-card: rgba(17, 24, 39, 0.85);
-  
-  --primary-light: rgba(0, 122, 255, 0.12);
-  --primary-glow: rgba(0, 122, 255, 0.3);
-  
-  --accent-light: rgba(40, 167, 69, 0.12);
-  --accent-glow: rgba(40, 167, 69, 0.3);
-  
-  --shadow-color: rgba(0, 0, 0, 0.3);
-  --shadow-color-md: rgba(0, 0, 0, 0.4);
-  --shadow-color-lg: rgba(0, 0, 0, 0.5);
-}
+
 
 /* Global Reset */
 * {
