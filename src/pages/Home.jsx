@@ -191,12 +191,12 @@ export default function Home({ onOrderRedirect, setView }) {
             </div>
             
             <h1 style={styles.heroTitle}>
-              Professional Academic <br />
-              <span className="gradient-text">Writing Services</span>
+              SKY Academic <br />
+              <span className="gradient-text">Writing Service</span>
             </h1>
             
             <p style={styles.heroDesc}>
-              Get custom essays, research papers, and coursework written from scratch by expert academic writers. Trusted by students worldwide since 2012.
+              Write Smart, Succeed fast. Get custom essays, research papers, and coursework written from scratch by expert academic writers. Trusted by students worldwide since 2012.
             </p>
             
             <div style={styles.badgeGrid}>

@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 
-export default function TiltCard({ children, style, className }) {
+export default function TiltCard({ children, style, className, onClick, cursor }) {
   const cardRef = useRef(null);
   const [transform, setTransform] = useState('perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)');
   const [glowStyle, setGlowStyle] = useState({ opacity: 0 });
@@ -44,8 +44,9 @@ export default function TiltCard({ children, style, className }) {
         transformStyle: 'preserve-3d',
         transition: 'transform 0.1s ease-out, box-shadow 0.15s ease-out',
         position: 'relative',
-        cursor: 'pointer',
+        cursor: cursor || (onClick ? 'pointer' : 'default'),
       }}
+      onClick={onClick}
       className={className}
     >
       {/* Light glow reflection overlay */}

@@ -89,7 +89,7 @@ export default function OrderNow({ initialCalcState, user, onLoginSuccess, setVi
   // --- Form States ---
   const [level, setLevel] = useState(initialCalcState?.academic_level || 'highschool');
   const [paperType, setPaperType] = useState(initialCalcState?.paper_type || 'Essay (any type)');
-  const [discipline, setDiscipline] = useState('Business & Management');
+  const [discipline, setDiscipline] = useState(initialCalcState?.discipline || 'Business & Management');
   const [topic, setTopic] = useState('');
   const [instructions, setInstructions] = useState('');
   const [format, setFormat] = useState('APA');
@@ -207,43 +207,9 @@ export default function OrderNow({ initialCalcState, user, onLoginSuccess, setVi
     }
   };
 
-  // --- Authentication Handler ---
-  const handleAuthSubmit = async (e) => {
-    e.preventDefault();
-    setAuthError('');
-    setAuthLoading(true);
-
-    try {
-      if (authMode === 'signup') {
-        const data = await api.register(authEmail, authPassword, authName, authPhone);
-        localStorage.setItem('token', data.token);
-        onLoginSuccess(data.user);
-      } else {
-        const data = await api.login(authEmail, authPassword);
-        localStorage.setItem('token', data.token);
-        onLoginSuccess(data.user);
-      }
-    } catch (err) {
-      setAuthError(err.message);
-    } finally {
-      setAuthLoading(false);
-    }
-  };
-
   // --- Final Checkout Placement ---
-  const handleCheckout = async () => {
-    if (!user) {
-      // User must log in first, scroll to the authentication section
-      const el = document.getElementById('step-account-sec');
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth' });
-        setAuthError('Please login or create an account to complete your checkout.');
-      }
-      return;
-    }
-
+  const executeCheckout = async (currentUser) => {
     try {
-      // 1. Send Order Details to backend
       const orderData = {
         academic_level: level,
         paper_type: paperType,
@@ -268,16 +234,56 @@ export default function OrderNow({ initialCalcState, user, onLoginSuccess, setVi
 
       const res = await api.createOrder(orderData);
 
-      // 2. Upload file if selected
       if (uploadedFile) {
         await api.uploadFile(res.id, uploadedFile, 'instruction');
       }
 
-      // 3. Shift to portals view
       setView('portal');
     } catch (err) {
       alert('Error placing order: ' + err.message);
     }
+  };
+
+  // --- Authentication Handler ---
+  const handleAuthSubmit = async (e) => {
+    e.preventDefault();
+    setAuthError('');
+    setAuthLoading(true);
+
+    try {
+      let loggedInUser = null;
+      if (authMode === 'signup') {
+        const data = await api.register(authEmail, authPassword, authName, authPhone);
+        localStorage.setItem('token', data.token);
+        loggedInUser = data.user;
+        onLoginSuccess(data.user);
+      } else {
+        const data = await api.login(authEmail, authPassword);
+        localStorage.setItem('token', data.token);
+        loggedInUser = data.user;
+        onLoginSuccess(data.user);
+      }
+
+      if (loggedInUser) {
+        await executeCheckout(loggedInUser);
+      }
+    } catch (err) {
+      setAuthError(err.message);
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+
+  const handleCheckout = async () => {
+    if (!user) {
+      const el = document.getElementById('step-account-sec');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+        setAuthError('Please login or create an account to complete your checkout.');
+      }
+      return;
+    }
+    await executeCheckout(user);
   };
 
   // --- Simulated AI Topic Improver ---
