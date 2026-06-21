@@ -3,30 +3,28 @@
 :root {
   --font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   
-  /* Primary HSL Color Palette */
-  --hue: 212;
-  --primary: HSL(var(--hue), 95%, 50%);
-  --primary-hover: HSL(var(--hue), 95%, 42%);
-  --primary-light: HSL(var(--hue), 95%, 96%);
-  --primary-glow: rgba(0, 122, 255, 0.15);
+  /* Primary HSL Color Palette - Deep Forest Green */
+  --primary: HSL(164, 76%, 18%);
+  --primary-hover: HSL(164, 76%, 12%);
+  --primary-light: HSL(164, 40%, 96%);
+  --primary-glow: rgba(10, 58, 42, 0.15);
   
-  /* Accent HSL Color Palette */
-  --accent-hue: 142;
-  --accent: HSL(var(--accent-hue), 76%, 40%);
-  --accent-hover: HSL(var(--accent-hue), 76%, 33%);
-  --accent-light: HSL(var(--accent-hue), 76%, 95%);
-  --accent-glow: rgba(40, 167, 69, 0.15);
+  /* Accent HSL Color Palette - Luxury Gold */
+  --accent: HSL(38, 65%, 46%);
+  --accent-hover: HSL(38, 65%, 38%);
+  --accent-light: HSL(38, 50%, 96%);
+  --accent-glow: rgba(189, 138, 39, 0.15);
   
-  /* Neutral Color Palette (Light Mode Default) */
-  --text-main: #1d2939;
-  --text-muted: #667085;
-  --border-light: #e4e7ec;
-  --bg-main: #fcfcfd;
+  /* Neutral Color Palette (Warm Champagne/Cream Theme) */
+  --text-main: #232b28;
+  --text-muted: #5f6d67;
+  --border-light: #e6eae7;
+  --bg-main: #faf8f5;
   --bg-card: #ffffff;
   
-  --shadow-color: rgba(0, 0, 0, 0.04);
-  --shadow-color-md: rgba(0, 0, 0, 0.08);
-  --shadow-color-lg: rgba(0, 0, 0, 0.12);
+  --shadow-color: rgba(42, 58, 50, 0.04);
+  --shadow-color-md: rgba(42, 58, 50, 0.08);
+  --shadow-color-lg: rgba(42, 58, 50, 0.12);
   
   /* Dimensions & Offsets */
   --radius-sm: 8px;
@@ -435,9 +433,9 @@ p {
 }
 
 .gradient-bg-hero {
-  background: radial-gradient(circle at 80% 20%, rgba(0, 122, 255, 0.08) 0%, transparent 40%),
-              radial-gradient(circle at 10% 80%, rgba(40, 167, 69, 0.06) 0%, transparent 40%),
-              radial-gradient(circle at 50% 50%, rgba(244, 246, 249, 1) 0%, rgba(235, 239, 244, 1) 100%);
+  background: radial-gradient(circle at 80% 20%, var(--primary-glow) 0%, transparent 40%),
+              radial-gradient(circle at 10% 80%, var(--accent-glow) 0%, transparent 40%),
+              radial-gradient(circle at 50% 50%, var(--bg-main) 0%, #f5f1eb 100%);
 }
 
 .glow-card-primary {
@@ -1342,7 +1340,7 @@ p {
 }
 .liquid-fill {
   height: 100%;
-  background: linear-gradient(90deg, #3b82f6, #10b981);
+  background: linear-gradient(90deg, var(--primary), var(--accent));
   border-radius: var(--radius-full);
   transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s ease;
   position: relative;
