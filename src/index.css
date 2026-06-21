@@ -455,7 +455,7 @@ p {
 
 /* AI Helper Tool styling */
 .ai-helper-btn {
-  background: linear-gradient(135deg, #6366f1, #a855f7);
+  background: linear-gradient(135deg, var(--primary), var(--accent));
   color: #ffffff;
   border: none;
   border-radius: 6px;
@@ -466,14 +466,14 @@ p {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  box-shadow: 0 4px 10px rgba(168, 85, 247, 0.25);
+  box-shadow: 0 4px 10px var(--primary-glow);
   transition: all 0.2s ease;
 }
 
 .ai-helper-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 14px rgba(168, 85, 247, 0.35);
-  background: linear-gradient(135deg, #4f46e5, #9333ea);
+  box-shadow: 0 6px 14px var(--accent-glow);
+  background: linear-gradient(135deg, var(--primary-hover), var(--accent-hover));
 }
 
 .ai-helper-panel {
@@ -506,7 +506,7 @@ p {
 
 .ai-suggestion-item:hover {
   background: rgba(255, 255, 255, 0.1);
-  border-color: #a855f7;
+  border-color: var(--accent);
   transform: translateX(4px);
 }
 
@@ -519,7 +519,7 @@ p {
   left: 0;
   width: 0%;
   height: 4px;
-  background: linear-gradient(90deg, var(--primary), #a855f7, var(--accent));
+  background: linear-gradient(90deg, var(--primary), var(--accent));
   z-index: 9999;
 }
 
@@ -567,7 +567,7 @@ p {
     from 0deg,
     transparent 20%,
     var(--primary) 40%,
-    #a855f7 60%,
+    var(--primary-light) 60%,
     var(--accent) 80%,
     transparent 100%
   );
@@ -577,7 +577,7 @@ p {
 
 .neon-border-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 12px 30px rgba(99, 102, 241, 0.2);
+  box-shadow: 0 12px 30px var(--primary-glow);
 }
 
 .neon-border-card-inner {
@@ -595,7 +595,7 @@ p {
 
 /* BoldText AI Modal & UI Components */
 .boldtext-trigger-btn {
-  background: linear-gradient(135deg, #ec4899, #8b5cf6);
+  background: linear-gradient(135deg, var(--primary), var(--accent));
   color: #fff;
   border: none;
   border-radius: 20px;
@@ -606,12 +606,12 @@ p {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.25);
+  box-shadow: 0 4px 12px var(--primary-glow);
   transition: var(--transition);
 }
 .boldtext-trigger-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4);
+  box-shadow: 0 6px 16px var(--accent-glow);
   filter: brightness(1.1);
 }
 
@@ -685,9 +685,9 @@ p {
 }
 .boldtext-tab.active {
   opacity: 1;
-  border-bottom-color: #8b5cf6;
-  color: #8b5cf6;
-  background: rgba(139, 92, 246, 0.05);
+  border-bottom-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-light);
 }
 
 .boldtext-body {
@@ -1051,7 +1051,7 @@ p {
   width: 65px;
   height: 65px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #a855f7, #ec4899);
+  background: linear-gradient(135deg, var(--primary), var(--accent));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1106,7 +1106,7 @@ p {
 .visualizer-bar {
   flex: 1;
   height: 3px;
-  background: #ec4899;
+  background: var(--accent);
   border-radius: 2px;
   transition: height 0.1s ease;
 }
@@ -1151,7 +1151,7 @@ p {
   width: 100%;
   height: 100%;
   pointer-events: none;
-  background: linear-gradient(135deg, #100b26, #21092e);
+  background: linear-gradient(135deg, #091a13, #151d14);
   clip-path: circle(0px at var(--mouse-x, 0%) var(--mouse-y, 0%));
   display: flex;
   flex-direction: column;
@@ -1159,11 +1159,11 @@ p {
   align-items: flex-start;
   padding: 40px;
   color: #ffffff;
-  border: 2px solid #a855f7;
+  border: 2px solid var(--accent);
   border-radius: var(--radius-md);
   box-sizing: border-box;
   transition: clip-path 0.05s ease-out;
-  box-shadow: inset 0 0 50px rgba(168, 85, 247, 0.35);
+  box-shadow: inset 0 0 50px rgba(189, 138, 39, 0.35);
 }
 .xray-card-container:hover .xray-overlay-layer {
   clip-path: circle(90px at var(--mouse-x, 0%) var(--mouse-y, 0%));
@@ -1173,12 +1173,12 @@ p {
   width: 180px;
   height: 180px;
   border-radius: 50%;
-  border: 2px dashed rgba(168, 85, 247, 0.7);
+  border: 2px dashed var(--accent);
   pointer-events: none;
   transform: translate(-50%, -50%) scale(0);
   opacity: 0;
   transition: transform 0.3s ease, opacity 0.3s ease;
-  box-shadow: 0 0 30px rgba(168, 85, 247, 0.25);
+  box-shadow: 0 0 30px var(--accent-glow);
   z-index: 4;
 }
 .xray-card-container:hover .xray-cursor {

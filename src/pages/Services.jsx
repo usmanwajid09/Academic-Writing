@@ -13,7 +13,7 @@ const SERVICES = [
     details: ['Admission & Application Essays', 'Narrative & Descriptive Essays', 'Analytical & Persuasive Papers', 'Scholarship Essays']
   },
   {
-    icon: <BookOpen size={32} color="#a855f7" />,
+    icon: <BookOpen size={32} color="var(--primary)" />,
     title: 'Research Papers & Literature Reviews',
     description: 'Deep qualitative or quantitative investigations complete with bibliography collections, empirical analysis, and standard citation mappings.',
     image: 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=600&h=380&q=80',
@@ -27,14 +27,14 @@ const SERVICES = [
     details: ['SWOT & PESTLE Analyzes', 'Corporate Financial Audits', 'Strategic Marketing Solutions', 'Executive Summary Writing']
   },
   {
-    icon: <Award size={32} color="#ec4899" />,
+    icon: <Award size={32} color="var(--primary)" />,
     title: 'Dissertations & Thesis Guidelines',
     description: 'Exacting postgraduate, doctoral, and master-level works compiled section-by-section. We support outlines, proposals, and final defenses.',
     image: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=600&h=380&q=80',
     details: ['Thesis Proposals & Abstracts', 'Theoretical Framework Formulations', 'Statistical Data Processing', 'Discussion & Policy Outlines']
   },
   {
-    icon: <Edit3 size={32} color="#f97316" />,
+    icon: <Edit3 size={32} color="var(--accent)" />,
     title: 'Editing & Professional Proofreading',
     description: 'Enhance your drafted documents. Our native ENL editors correct grammar syntax, check bibliography linkages, adjust tone registers, and strip plagiarism.',
     image: 'https://images.unsplash.com/photo-1501504905252-473c47e087f8?auto=format&fit=crop&w=600&h=380&q=80',
@@ -198,7 +198,7 @@ export default function Services({ setView }) {
             </div>
           </div>
           <div style={{ display: 'flex', gap: '16px' }}>
-            <div style={{ color: '#ec4899', padding: '8px', background: '#fff', borderRadius: '8px', height: 'fit-content', boxShadow: 'var(--shadow-sm)' }}>
+            <div style={{ color: 'var(--primary)', padding: '8px', background: '#fff', borderRadius: '8px', height: 'fit-content', boxShadow: 'var(--shadow-sm)' }}>
               <Layers size={24} />
             </div>
             <div>

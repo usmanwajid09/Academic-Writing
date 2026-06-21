@@ -212,7 +212,7 @@ export default function Contact() {
               </a>
 
               <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-                <div style={{ background: 'rgba(237, 233, 254, 0.7)', padding: '12px', borderRadius: '12px', color: '#6d28d9' }}>
+                <div style={{ background: 'var(--primary-light)', padding: '12px', borderRadius: '12px', color: 'var(--primary)' }}>
                   <MapPin size={20} />
                 </div>
                 <div>

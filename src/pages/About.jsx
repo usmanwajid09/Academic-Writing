@@ -244,7 +244,7 @@ export default function About({ setView }) {
       {/* CTA section */}
       <section className="container">
         <div style={{ 
-          background: 'linear-gradient(135deg, #1e1b4b, #311042)', 
+          background: 'linear-gradient(135deg, #06241a, #0b3728)', 
           borderRadius: 'var(--radius-md)', 
           padding: '48px', 
           textAlign: 'center', 
@@ -253,14 +253,14 @@ export default function About({ setView }) {
           overflow: 'hidden'
         }}>
           <div className="glowing-mesh" style={{ top: '-100px', left: '-100px' }}></div>
-          <div className="glowing-mesh" style={{ bottom: '-100px', right: '-100px', background: 'radial-gradient(circle, rgba(168, 85, 247, 0.15) 0%, transparent 70%)' }}></div>
+          <div className="glowing-mesh" style={{ bottom: '-100px', right: '-100px', background: 'radial-gradient(circle, var(--accent-glow) 0%, transparent 70%)' }}></div>
           
           <h2 style={{ color: '#fff', fontSize: '2.2rem', marginBottom: '16px', position: 'relative', zIndex: '2' }}>Ready to Secure Your Academic Success?</h2>
           <p style={{ color: '#cbd5e1', maxWidth: '600px', margin: '0 auto 32px auto', position: 'relative', zIndex: '2' }}>
             Create an order now and lock in a 25% discount with coupon code <strong>SAVE25</strong> on your first custom paper.
           </p>
           <div style={{ display: 'flex', justifyContent: 'center', gap: '16px', flexWrap: 'wrap', position: 'relative', zIndex: '2' }}>
-            <button className="btn-accent" style={{ background: 'linear-gradient(135deg, #ec4899, #8b5cf6)' }} onClick={() => setView('order')}>
+            <button className="btn-accent" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }} onClick={() => setView('order')}>
               Order Now <ArrowRight size={16} />
             </button>
             <button className="btn-secondary" style={{ color: '#fff', borderColor: '#fff' }} onClick={() => setView('pricing')}>

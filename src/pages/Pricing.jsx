@@ -42,22 +42,22 @@ export default function Pricing({ onOrderRedirect, setView }) {
           <div>
             <div 
               style={{ 
-                background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.08), rgba(139, 92, 246, 0.08))', 
-                border: '1px solid rgba(139, 92, 246, 0.15)',
+                background: 'var(--accent-light)', 
+                border: '1px solid var(--accent)',
                 borderRadius: '16px',
                 padding: '28px',
                 marginBottom: '32px'
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#8b5cf6', marginBottom: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--accent)', marginBottom: '12px' }}>
                 <Tag size={20} />
                 <h4 style={{ margin: 0, fontWeight: '700' }}>WELCOME DISCOUNT ACTIVE</h4>
               </div>
               <h3 style={{ fontSize: '1.5rem', marginBottom: '8px', color: '#0f172a' }}>Get 25% Off First Order</h3>
               <p style={{ fontSize: '0.92rem', marginBottom: '16px' }}>
-                Apply coupon code <strong style={{ color: '#8b5cf6' }}>SAVE25</strong> at checkout to slash 25% off your subtotal. Valid for all academic levels and subjects.
+                Apply coupon code <strong style={{ color: 'var(--accent)' }}>SAVE25</strong> at checkout to slash 25% off your subtotal. Valid for all academic levels and subjects.
               </p>
-              <button className="btn-accent" style={{ background: 'linear-gradient(135deg, #ec4899, #8b5cf6)', padding: '10px 24px', fontSize: '0.88rem' }} onClick={() => setView('order')}>
+              <button className="btn-accent" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))', padding: '10px 24px', fontSize: '0.88rem' }} onClick={() => setView('order')}>
                 Order With 25% Off
               </button>
             </div>

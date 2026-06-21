@@ -412,7 +412,7 @@ export default function OrderNow({ initialCalcState, user, onLoginSuccess, setVi
                     className="ai-helper-panel"
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                      <Wand2 size={16} color="#c084fc" />
+                      <Wand2 size={16} color="var(--accent)" />
                       <strong style={{ fontSize: '0.88rem' }}>AI Topic Suggestions for {discipline}</strong>
                     </div>
                     {aiTopicsList.map((t, idx) => (
