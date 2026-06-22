@@ -2,14 +2,28 @@ import express from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import multer from 'multer';
+import rateLimit from 'express-rate-limit';
+import dotenv from 'dotenv';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
 import db from './db.js';
 
+// Load environment variables
+dotenv.config();
+
 const router = express.Router();
-const JWT_SECRET = 'academic_writing_secret_key_12345';
+const JWT_SECRET = process.env.JWT_SECRET || 'academic_writing_secret_key_default_fallback_12345';
 const __dirname = dirname(fileURLToPath(import.meta.url));
+
+// Rate limiter for authentication endpoints (DDoS and brute-force protection)
+const authRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 20, // Limit each IP to 20 requests per windowMs
+  message: { error: 'Too many authentication attempts from this IP, please try again after 15 minutes' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -40,7 +54,7 @@ export function authenticateToken(req, res, next) {
 // --- AUTH ROUTERS ---
 
 // Register Client
-router.post('/auth/register', (req, res) => {
+router.post('/auth/register', authRateLimiter, (req, res) => {
   const { email, password, name, phone } = req.body;
   if (!email || !password || !name) {
     return res.status(400).json({ error: 'Required fields missing' });
@@ -67,7 +81,7 @@ router.post('/auth/register', (req, res) => {
 });
 
 // Login
-router.post('/auth/login', (req, res) => {
+router.post('/auth/login', authRateLimiter, (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
     return res.status(400).json({ error: 'Email and password required' });

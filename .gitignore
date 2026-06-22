@@ -30,3 +30,6 @@ academic.db
 
 # Client uploads
 uploads/
+
+# Environment Variables
+.env
