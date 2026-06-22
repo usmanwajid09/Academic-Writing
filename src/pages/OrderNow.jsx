@@ -89,7 +89,7 @@ export default function OrderNow({ initialCalcState, user, onLoginSuccess, setVi
   // --- Form States ---
   const [level, setLevel] = useState(initialCalcState?.academic_level || 'highschool');
   const [paperType, setPaperType] = useState(initialCalcState?.paper_type || 'Essay (any type)');
-  const [discipline, setDiscipline] = useState('Business & Management');
+  const [discipline, setDiscipline] = useState(initialCalcState?.discipline || 'Business & Management');
   const [topic, setTopic] = useState('');
   const [instructions, setInstructions] = useState('');
   const [format, setFormat] = useState('APA');
@@ -122,6 +122,19 @@ export default function OrderNow({ initialCalcState, user, onLoginSuccess, setVi
   const [authPhone, setAuthPhone] = useState('');
   const [authError, setAuthError] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
+
+  // Payment Simulator States
+  const [paymentMethod, setPaymentMethod] = useState('easypaisa'); // easypaisa, jazzcash, card, bank
+  const [paymentPhone, setPaymentPhone] = useState('');
+  const [paymentCardName, setPaymentCardName] = useState('');
+  const [paymentCardNum, setPaymentCardNum] = useState('');
+  const [paymentCardExpiry, setPaymentCardExpiry] = useState('');
+  const [paymentCardCVC, setPaymentCardCVC] = useState('');
+  const [paymentTxnId, setPaymentTxnId] = useState('');
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [paymentProcessing, setPaymentProcessing] = useState(false);
+  const [paymentOTP, setPaymentOTP] = useState('');
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
 
   // --- AI Writing Helper States ---
   const [showAITopics, setShowAITopics] = useState(false);
@@ -207,43 +220,9 @@ export default function OrderNow({ initialCalcState, user, onLoginSuccess, setVi
     }
   };
 
-  // --- Authentication Handler ---
-  const handleAuthSubmit = async (e) => {
-    e.preventDefault();
-    setAuthError('');
-    setAuthLoading(true);
-
-    try {
-      if (authMode === 'signup') {
-        const data = await api.register(authEmail, authPassword, authName, authPhone);
-        localStorage.setItem('token', data.token);
-        onLoginSuccess(data.user);
-      } else {
-        const data = await api.login(authEmail, authPassword);
-        localStorage.setItem('token', data.token);
-        onLoginSuccess(data.user);
-      }
-    } catch (err) {
-      setAuthError(err.message);
-    } finally {
-      setAuthLoading(false);
-    }
-  };
-
   // --- Final Checkout Placement ---
-  const handleCheckout = async () => {
-    if (!user) {
-      // User must log in first, scroll to the authentication section
-      const el = document.getElementById('step-account-sec');
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth' });
-        setAuthError('Please login or create an account to complete your checkout.');
-      }
-      return;
-    }
-
+  const executeCheckout = async (currentUser) => {
     try {
-      // 1. Send Order Details to backend
       const orderData = {
         academic_level: level,
         paper_type: paperType,
@@ -268,16 +247,89 @@ export default function OrderNow({ initialCalcState, user, onLoginSuccess, setVi
 
       const res = await api.createOrder(orderData);
 
-      // 2. Upload file if selected
       if (uploadedFile) {
         await api.uploadFile(res.id, uploadedFile, 'instruction');
       }
 
-      // 3. Shift to portals view
       setView('portal');
     } catch (err) {
       alert('Error placing order: ' + err.message);
     }
+  };
+
+  // --- Authentication Handler ---
+  const handleAuthSubmit = async (e) => {
+    e.preventDefault();
+    setAuthError('');
+    setAuthLoading(true);
+
+    try {
+      let loggedInUser = null;
+      if (authMode === 'signup') {
+        const data = await api.register(authEmail, authPassword, authName, authPhone);
+        localStorage.setItem('token', data.token);
+        loggedInUser = data.user;
+        onLoginSuccess(data.user);
+      } else {
+        const data = await api.login(authEmail, authPassword);
+        localStorage.setItem('token', data.token);
+        loggedInUser = data.user;
+        onLoginSuccess(data.user);
+      }
+
+      if (loggedInUser) {
+        setTimeout(() => {
+          const el = document.getElementById('step-payment-sec');
+          if (el) {
+            el.scrollIntoView({ behavior: 'smooth' });
+          }
+        }, 150);
+      }
+    } catch (err) {
+      setAuthError(err.message);
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+
+  const handleCheckout = async () => {
+    if (!user) {
+      const el = document.getElementById('step-account-sec');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+        setAuthError('Please login or create an account to complete your checkout.');
+      }
+      return;
+    }
+
+    // Validate payment fields
+    if (paymentMethod === 'easypaisa' || paymentMethod === 'jazzcash') {
+      if (!paymentPhone.trim()) {
+        alert('Please enter your mobile wallet account number.');
+        return;
+      }
+    } else if (paymentMethod === 'card') {
+      if (!paymentCardName.trim() || !paymentCardNum.trim() || !paymentCardExpiry.trim() || !paymentCardCVC.trim()) {
+        alert('Please fill in all credit card details.');
+        return;
+      }
+    } else if (paymentMethod === 'bank') {
+      if (!paymentTxnId.trim()) {
+        alert('Please enter your bank transfer Transaction ID (TXN ID).');
+        return;
+      }
+    }
+
+    // Open simulated payment gateway modal
+    setShowPaymentModal(true);
+    setPaymentProcessing(true);
+    setPaymentSuccess(false);
+    setPaymentOTP('');
+
+    // Simulate payment authorization processing
+    setTimeout(() => {
+      setPaymentProcessing(false);
+    }, 1500);
   };
 
   // --- Simulated AI Topic Improver ---
@@ -406,7 +458,7 @@ export default function OrderNow({ initialCalcState, user, onLoginSuccess, setVi
                     className="ai-helper-panel"
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                      <Wand2 size={16} color="#c084fc" />
+                      <Wand2 size={16} color="var(--accent)" />
                       <strong style={{ fontSize: '0.88rem' }}>AI Topic Suggestions for {discipline}</strong>
                     </div>
                     {aiTopicsList.map((t, idx) => (
@@ -742,6 +794,206 @@ export default function OrderNow({ initialCalcState, user, onLoginSuccess, setVi
               </div>
             )}
           </div>
+
+          {/* STEP 3: SECURE PAYMENT DETAILS */}
+          {user && (
+            <div className="glass-card glow-card-primary" style={styles.stepCard} id="step-payment-sec">
+              <div style={styles.stepHeader}>
+                <span style={styles.stepNum}>3</span>
+                <h3>Secure Payment Details</h3>
+              </div>
+              
+              <div style={{ marginBottom: '20px' }}>
+                <label style={{ fontWeight: '600', display: 'block', marginBottom: '12px' }}>Select Payment Method</label>
+                <div style={styles.paymentGrid}>
+                  {/* EasyPaisa */}
+                  <div 
+                    onClick={() => setPaymentMethod('easypaisa')}
+                    style={paymentMethod === 'easypaisa' ? styles.payOptionActive : styles.payOption}
+                  >
+                    <div style={{ ...styles.payIconCircle, background: '#10b981' }}>EP</div>
+                    <div style={styles.payTextContainer}>
+                      <span style={styles.payTitle}>EasyPaisa Wallet</span>
+                      <span style={styles.paySub}>Simulated Gateway</span>
+                    </div>
+                  </div>
+
+                  {/* JazzCash */}
+                  <div 
+                    onClick={() => setPaymentMethod('jazzcash')}
+                    style={paymentMethod === 'jazzcash' ? styles.payOptionActive : styles.payOption}
+                  >
+                    <div style={{ ...styles.payIconCircle, background: '#f59e0b' }}>JC</div>
+                    <div style={styles.payTextContainer}>
+                      <span style={styles.payTitle}>JazzCash Wallet</span>
+                      <span style={styles.paySub}>Simulated Gateway</span>
+                    </div>
+                  </div>
+
+                  {/* Credit Card */}
+                  <div 
+                    onClick={() => setPaymentMethod('card')}
+                    style={paymentMethod === 'card' ? styles.payOptionActive : styles.payOption}
+                  >
+                    <div style={{ ...styles.payIconCircle, background: 'var(--primary)' }}>CC</div>
+                    <div style={styles.payTextContainer}>
+                      <span style={styles.payTitle}>Credit / Debit Card</span>
+                      <span style={styles.paySub}>Secure Payment</span>
+                    </div>
+                  </div>
+
+                  {/* Bank Transfer */}
+                  <div 
+                    onClick={() => setPaymentMethod('bank')}
+                    style={paymentMethod === 'bank' ? styles.payOptionActive : styles.payOption}
+                  >
+                    <div style={{ ...styles.payIconCircle, background: 'var(--accent)' }}>BT</div>
+                    <div style={styles.payTextContainer}>
+                      <span style={styles.payTitle}>Bank Transfer</span>
+                      <span style={styles.paySub}>Manual Reference</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Dynamic inputs based on method */}
+              <AnimatePresence mode="wait">
+                {paymentMethod === 'easypaisa' && (
+                  <motion.div 
+                    key="easypaisa-fields"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    style={{ overflow: 'hidden' }}
+                  >
+                    <div className="form-group">
+                      <label>EasyPaisa Account Number (Mobile Phone)*</label>
+                      <input 
+                        type="text" 
+                        placeholder="e.g. 03211234567" 
+                        value={paymentPhone}
+                        onChange={(e) => setPaymentPhone(e.target.value)}
+                        className="form-input"
+                      />
+                      <span style={styles.conversionHint}>
+                        PKR Conversion Rate: $1.00 = Rs. 280. Total: <strong>Rs. {(pricing.total * 280).toLocaleString()}</strong>
+                      </span>
+                    </div>
+                  </motion.div>
+                )}
+
+                {paymentMethod === 'jazzcash' && (
+                  <motion.div 
+                    key="jazzcash-fields"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    style={{ overflow: 'hidden' }}
+                  >
+                    <div className="form-group">
+                      <label>JazzCash Account Number (Mobile Phone)*</label>
+                      <input 
+                        type="text" 
+                        placeholder="e.g. 03211234567" 
+                        value={paymentPhone}
+                        onChange={(e) => setPaymentPhone(e.target.value)}
+                        className="form-input"
+                      />
+                      <span style={styles.conversionHint}>
+                        PKR Conversion Rate: $1.00 = Rs. 280. Total: <strong>Rs. {(pricing.total * 280).toLocaleString()}</strong>
+                      </span>
+                    </div>
+                  </motion.div>
+                )}
+
+                {paymentMethod === 'card' && (
+                  <motion.div 
+                    key="card-fields"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    style={{ overflow: 'hidden' }}
+                  >
+                    <div style={styles.formRow}>
+                      <div className="form-group" style={{ flex: 1 }}>
+                        <label>Cardholder Name*</label>
+                        <input 
+                          type="text" 
+                          placeholder="Usman Wajid" 
+                          value={paymentCardName}
+                          onChange={(e) => setPaymentCardName(e.target.value)}
+                          className="form-input"
+                        />
+                      </div>
+                      <div className="form-group" style={{ flex: 1 }}>
+                        <label>Card Number*</label>
+                        <input 
+                          type="text" 
+                          placeholder="4242 4242 4242 4242" 
+                          value={paymentCardNum}
+                          onChange={(e) => setPaymentCardNum(e.target.value)}
+                          className="form-input"
+                        />
+                      </div>
+                    </div>
+                    <div style={styles.formRow}>
+                      <div className="form-group" style={{ flex: 1 }}>
+                        <label>Expiry Date*</label>
+                        <input 
+                          type="text" 
+                          placeholder="MM/YY" 
+                          value={paymentCardExpiry}
+                          onChange={(e) => setPaymentCardExpiry(e.target.value)}
+                          className="form-input"
+                        />
+                      </div>
+                      <div className="form-group" style={{ flex: 1 }}>
+                        <label>CVC / CVV*</label>
+                        <input 
+                          type="password" 
+                          placeholder="123" 
+                          value={paymentCardCVC}
+                          onChange={(e) => setPaymentCardCVC(e.target.value)}
+                          className="form-input"
+                        />
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
+                {paymentMethod === 'bank' && (
+                  <motion.div 
+                    key="bank-fields"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    style={{ overflow: 'hidden' }}
+                  >
+                    <div style={styles.bankInstructionBox}>
+                      <p style={{ margin: '0 0 10px 0', fontSize: '0.85rem' }}>
+                        Please transfer the total amount of <strong>${pricing.total.toFixed(2)}</strong> (or equivalent <strong>Rs. {(pricing.total * 280).toLocaleString()}</strong>) to the bank account below:
+                      </p>
+                      <div style={styles.bankDetailCard}>
+                        <strong>Bank:</strong> Faysal Bank Limited<br />
+                        <strong>Account Title:</strong> SKY Academic Services<br />
+                        <strong>IBAN:</strong> PK86 FAYS 0123 4567 8901 2345
+                      </div>
+                      <div className="form-group" style={{ marginTop: '16px' }}>
+                        <label>Transaction ID / Receipt Reference*</label>
+                        <input 
+                          type="text" 
+                          placeholder="e.g. TID9823901" 
+                          value={paymentTxnId}
+                          onChange={(e) => setPaymentTxnId(e.target.value)}
+                          className="form-input"
+                        />
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          )}
         </div>
 
         {/* Invoice Summary Area */}
@@ -878,6 +1130,127 @@ export default function OrderNow({ initialCalcState, user, onLoginSuccess, setVi
         onApply={(processedText) => setInstructions(processedText)} 
         theme="light"
       />
+
+      {/* SIMULATED PAYMENT GATEWAY MODAL */}
+      <AnimatePresence>
+        {showPaymentModal && (
+          <div className="payment-modal-overlay">
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="payment-modal-card"
+            >
+              <div className="payment-modal-header">
+                <h3>SKY Pay Secure Gateway</h3>
+                <span className="payment-modal-method">
+                  {paymentMethod === 'easypaisa' ? 'EasyPaisa Wallet' :
+                   paymentMethod === 'jazzcash' ? 'JazzCash Wallet' :
+                   paymentMethod === 'card' ? '3D Secure Card Verification' :
+                   'Bank Transfer Reference'}
+                </span>
+              </div>
+
+              <div className="payment-modal-body">
+                {paymentProcessing ? (
+                  <div style={styles.modalStatusBox}>
+                    <div className="gateway-spinner"></div>
+                    <p style={{ marginTop: '16px', fontWeight: '600' }}>Contacting Secure Payment Provider...</p>
+                    <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Please do not close or refresh this page.</p>
+                  </div>
+                ) : paymentSuccess ? (
+                  <div style={styles.modalStatusBox}>
+                    <div style={styles.successCheckmarkWrapper}>
+                      <CheckCircle2 size={64} color="#10b981" />
+                    </div>
+                    <h4 style={{ marginTop: '16px', color: '#10b981', fontWeight: '700' }}>Payment Authorized!</h4>
+                    <p style={{ color: 'var(--text-muted)', fontSize: '0.82rem' }}>Your order is being processed and placed automatically.</p>
+                  </div>
+                ) : (
+                  <div>
+                    {/* OTP / PIN Entry */}
+                    <p style={{ fontSize: '0.9rem', marginBottom: '16px', lineHeight: '1.5' }}>
+                      {paymentMethod === 'easypaisa' || paymentMethod === 'jazzcash' ? (
+                        <span>
+                          A push notification or OTP has been sent to your phone number <strong>{paymentPhone}</strong>. Please enter your <strong>5-digit wallet PIN</strong> below to authorize the payment of <strong>Rs. {(pricing.total * 280).toLocaleString()}</strong>.
+                        </span>
+                      ) : paymentMethod === 'card' ? (
+                        <span>
+                          To secure your card purchase of <strong>${pricing.total.toFixed(2)}</strong>, a one-time <strong>6-digit OTP code</strong> has been sent to your phone. Please enter it below.
+                        </span>
+                      ) : (
+                        <span>
+                          Please confirm details for Bank Transfer Reference <strong>{paymentTxnId}</strong> of <strong>${pricing.total.toFixed(2)}</strong>.
+                        </span>
+                      )}
+                    </p>
+
+                    {paymentMethod !== 'bank' ? (
+                      <div className="form-group" style={{ textAlign: 'center' }}>
+                        <label style={{ display: 'block', marginBottom: '12px', fontWeight: '700' }}>
+                          {paymentMethod === 'card' ? 'Enter 6-Digit OTP' : 'Enter 5-Digit PIN'}
+                        </label>
+                        <input 
+                          type="password" 
+                          maxLength={paymentMethod === 'card' ? 6 : 5}
+                          value={paymentOTP}
+                          onChange={(e) => setPaymentOTP(e.target.value)}
+                          style={styles.otpInputStyle}
+                          placeholder={paymentMethod === 'card' ? '••••••' : '•••••'}
+                        />
+                        <p style={{ color: 'var(--text-muted)', fontSize: '0.78rem', marginTop: '8px' }}>
+                          Simulated code. You can enter any digits (e.g. 12345 or 123456) to proceed.
+                        </p>
+                      </div>
+                    ) : (
+                      <div style={{ textAlign: 'center', padding: '10px 0' }}>
+                        <p style={{ fontWeight: '600' }}>Reference TXN ID: {paymentTxnId}</p>
+                        <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Our finance team will verify the payment against this Transaction ID.</p>
+                      </div>
+                    )}
+
+                    <div style={styles.modalActions}>
+                      <button 
+                        type="button" 
+                        onClick={() => setShowPaymentModal(false)} 
+                        className="btn-primary"
+                        style={{ background: 'var(--bg-main)', color: 'var(--text-main)', border: '1px solid var(--border-light)' }}
+                      >
+                        Cancel Transaction
+                      </button>
+                      <button 
+                        type="button" 
+                        onClick={async () => {
+                          // Validate OTP length
+                          if (paymentMethod !== 'bank') {
+                            const reqLen = paymentMethod === 'card' ? 6 : 5;
+                            if (paymentOTP.length !== reqLen) {
+                              alert(`Please enter a valid ${reqLen}-digit code.`);
+                              return;
+                            }
+                          }
+                          
+                          // Set success state
+                          setPaymentSuccess(true);
+                          
+                          // Execute checkout after success checkmark animation (1.5s delay)
+                          setTimeout(async () => {
+                            setShowPaymentModal(false);
+                            await executeCheckout(user);
+                          }, 1500);
+                        }} 
+                        className="btn-accent"
+                      >
+                        {paymentMethod === 'bank' ? 'Confirm Payment' : 'Authorize & Pay'}
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
@@ -1253,5 +1626,113 @@ const styles = {
     fontSize: '0.75rem',
     color: 'var(--text-muted)',
     marginTop: '12px',
+  },
+  paymentGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))',
+    gap: '12px',
+    marginBottom: '20px',
+  },
+  payOption: {
+    border: '1px solid var(--border-light)',
+    borderRadius: '10px',
+    padding: '16px',
+    cursor: 'pointer',
+    background: 'var(--bg-main)',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    textAlign: 'center',
+    gap: '10px',
+    transition: 'var(--transition)',
+  },
+  payOptionActive: {
+    border: '2px solid var(--accent)',
+    borderRadius: '10px',
+    padding: '15px',
+    cursor: 'pointer',
+    background: 'var(--accent-light)',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    textAlign: 'center',
+    gap: '10px',
+  },
+  payIconCircle: {
+    width: '40px',
+    height: '40px',
+    borderRadius: '50%',
+    color: '#ffffff',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontWeight: '700',
+    fontSize: '0.9rem',
+  },
+  payTextContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '2px',
+  },
+  payTitle: {
+    fontSize: '0.82rem',
+    fontWeight: '700',
+    color: 'var(--text-main)',
+  },
+  paySub: {
+    fontSize: '0.7rem',
+    color: 'var(--text-muted)',
+  },
+  conversionHint: {
+    display: 'block',
+    fontSize: '0.8rem',
+    color: 'var(--primary)',
+    marginTop: '6px',
+    fontWeight: '500',
+  },
+  bankInstructionBox: {
+    background: 'var(--bg-main)',
+    border: '1px solid var(--border-light)',
+    padding: '16px',
+    borderRadius: '8px',
+  },
+  bankDetailCard: {
+    background: '#ffffff',
+    border: '1px solid var(--border-light)',
+    padding: '12px',
+    borderRadius: '6px',
+    fontFamily: 'monospace',
+    fontSize: '0.82rem',
+    lineHeight: '1.5',
+  },
+  otpInputStyle: {
+    width: '160px',
+    letterSpacing: '8px',
+    textAlign: 'center',
+    fontSize: '1.5rem',
+    fontWeight: '700',
+    padding: '10px',
+    border: '2px solid var(--border-light)',
+    borderRadius: '8px',
+    margin: '0 auto',
+    display: 'block',
+    outline: 'none',
+  },
+  modalStatusBox: {
+    textAlign: 'center',
+    padding: '30px 10px',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalActions: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    gap: '12px',
+    marginTop: '24px',
+  },
+  successCheckmarkWrapper: {
+    animation: 'scaleUp 0.4s ease-out forwards',
   }
 };

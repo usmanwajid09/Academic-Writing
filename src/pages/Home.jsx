@@ -191,12 +191,12 @@ export default function Home({ onOrderRedirect, setView }) {
             </div>
             
             <h1 style={styles.heroTitle}>
-              Professional Academic <br />
-              <span className="gradient-text">Writing Services</span>
+              SKY Academic <br />
+              <span className="gradient-text">Writing Service</span>
             </h1>
             
             <p style={styles.heroDesc}>
-              Get custom essays, research papers, and coursework written from scratch by expert academic writers. Trusted by students worldwide since 2012.
+              Write Smart, Succeed fast. Get custom essays, research papers, and coursework written from scratch by expert academic writers. Trusted by students worldwide since 2012.
             </p>
             
             <div style={styles.badgeGrid}>
@@ -289,8 +289,8 @@ export default function Home({ onOrderRedirect, setView }) {
             </TiltCard>
 
             <TiltCard style={styles.featureCard} className="glass-card">
-              <div style={{ ...styles.iconBox, background: 'rgba(237, 233, 254, 0.7)' }}>
-                <ShieldCheck color="#6d28d9" size={24} />
+              <div style={{ ...styles.iconBox, background: 'var(--primary-light)' }}>
+                <ShieldCheck color="var(--primary)" size={24} />
               </div>
               <h4 style={styles.featureTitle}>Guaranteed Plagiarism-Free</h4>
               <p style={styles.featureDesc}>
@@ -329,7 +329,7 @@ export default function Home({ onOrderRedirect, setView }) {
               <div className="horizontal-slide">
                 <div className="glass-card" style={styles.journeyCard}>
                   <span style={styles.journeyStep}>02</span>
-                  <h3 style={{ color: '#a855f7', fontWeight: '700' }}>Expert Assignment</h3>
+                  <h3 style={{ color: 'var(--accent)', fontWeight: '700' }}>Expert Assignment</h3>
                   <p style={{ fontSize: '0.92rem' }}>Our coordinators review your research prompt and assign a verified native writer holding a Master's or PhD in your exact study discipline.</p>
                   <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=400&h=200&q=80" alt="Vetted writers" style={styles.journeyCardImg} />
                 </div>
@@ -339,7 +339,7 @@ export default function Home({ onOrderRedirect, setView }) {
               <div className="horizontal-slide">
                 <div className="glass-card" style={styles.journeyCard}>
                   <span style={styles.journeyStep}>03</span>
-                  <h3 style={{ color: 'var(--accent)', fontWeight: '700' }}>Live Progress Chat</h3>
+                  <h3 style={{ color: 'var(--primary)', fontWeight: '700' }}>Live Progress Chat</h3>
                   <p style={{ fontSize: '0.92rem' }}>Chat directly with your assigned writer within your client portal. Share sources, preview outlines, and upload additional materials.</p>
                   <img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=400&h=200&q=80" alt="Live Chat" style={styles.journeyCardImg} />
                 </div>
@@ -349,7 +349,7 @@ export default function Home({ onOrderRedirect, setView }) {
               <div className="horizontal-slide">
                 <div className="glass-card" style={styles.journeyCard}>
                   <span style={styles.journeyStep}>04</span>
-                  <h3 style={{ color: '#ec4899', fontWeight: '700' }}>Originality & Delivery</h3>
+                  <h3 style={{ color: 'var(--accent)', fontWeight: '700' }}>Originality & Delivery</h3>
                   <p style={{ fontSize: '0.92rem' }}>Every paper undergoes editorial review and Turnitin checks. Download your high-quality, plagiarism-free paper from your dashboard.</p>
                   <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=400&h=200&q=80" alt="Delivery" style={styles.journeyCardImg} />
                 </div>

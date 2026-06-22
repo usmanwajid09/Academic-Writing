@@ -120,7 +120,7 @@ export default function BoldTextAIPlugin({ isOpen, onClose, initialText, onApply
         {/* Header */}
         <div className="boldtext-header">
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Sparkles size={18} color="#ec4899" />
+            <Sparkles size={18} color="var(--accent)" />
             <h3 style={{ margin: 0, color: '#fff', fontSize: '1.2rem' }}>BoldText AI Editor Plugin</h3>
           </div>
           <button 
@@ -254,7 +254,7 @@ export default function BoldTextAIPlugin({ isOpen, onClose, initialText, onApply
               padding: '8px 20px', 
               fontSize: '0.9rem', 
               borderRadius: '8px',
-              background: 'linear-gradient(135deg, #ec4899, #8b5cf6)',
+              background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))',
               opacity: preview ? 1 : 0.5,
               cursor: preview ? 'pointer' : 'not-allowed'
             }}

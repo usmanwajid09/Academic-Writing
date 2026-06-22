@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { FileText, ArrowRight, ShieldCheck, HelpCircle } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 const ITEMS = [
   { title: 'Academic Essay', icon: '📝', rate: '$10.00/pg', description: 'Argumentative, narrative, and analysis essays custom structured.' },
@@ -16,17 +16,18 @@ const ITEMS = [
 export default function VortexGallery({ onSelect }) {
   const [rotation, setRotation] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const startX = useRef(0);
   const currentRotation = useRef(0);
 
-  // Auto rotate slowly when not dragging
+  // Auto rotate slowly when not dragging or hovered
   useEffect(() => {
-    if (isDragging) return;
+    if (isDragging || isHovered) return;
     const interval = setInterval(() => {
       setRotation(r => r - 0.2);
     }, 30);
     return () => clearInterval(interval);
-  }, [isDragging]);
+  }, [isDragging, isHovered]);
 
   const handleMouseDown = (e) => {
     setIsDragging(true);
@@ -37,7 +38,6 @@ export default function VortexGallery({ onSelect }) {
   const handleMouseMove = (e) => {
     if (!isDragging) return;
     const deltaX = e.clientX - startX.current;
-    // Map drag distance to Y rotation degrees (e.g. 0.5 deg per pixel)
     const nextRotation = currentRotation.current + deltaX * 0.4;
     setRotation(nextRotation);
   };
@@ -74,23 +74,51 @@ export default function VortexGallery({ onSelect }) {
       <div 
         className="vortex-spinner"
         style={{
-          transform: `rotateY(${rotation}deg)`
+          transform: `rotateY(${rotation}deg)`,
+          transition: isDragging ? 'none' : 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)'
         }}
       >
         {ITEMS.map((item, idx) => {
-          const angle = idx * 45; // 360 degrees / 8 items = 45 degrees step
+          const angle = idx * 45; // 360 / 8 = 45 degrees
+          
+          // Calculate relative angle to center front (0deg)
+          const relAngle = ((rotation + angle) % 360 + 540) % 360 - 180; // normalized to [-180, 180]
+          const cosAngle = Math.cos((relAngle * Math.PI) / 180);
+          
+          // Dynamic depth cues
+          const opacity = 0.25 + 0.75 * ((cosAngle + 1) / 2);
+          const scale = 0.85 + 0.15 * ((cosAngle + 1) / 2);
+          const zIndex = Math.round((cosAngle + 1) * 20);
+          const blurValue = Math.max(0, (1 - cosAngle) * 3); // Blur up to 3px in the back
+          const isFront = cosAngle > 0.92;
+
           return (
             <div 
               key={idx}
               className="vortex-item"
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}
+              onClick={() => {
+                if (!isDragging) {
+                  // Spin cylinder to bring this card directly to the front!
+                  setRotation(-angle);
+                }
+              }}
               style={{
-                transform: `rotateY(${angle}deg) translateZ(280px)`,
-                cursor: isDragging ? 'grabbing' : 'grab'
+                transform: `rotateY(${angle}deg) translateZ(280px) scale(${scale})`,
+                opacity: opacity,
+                zIndex: zIndex,
+                filter: `blur(${blurValue}px)`,
+                cursor: isDragging ? 'grabbing' : 'grab',
+                borderColor: isFront ? 'var(--accent)' : 'var(--border-light)',
+                borderWidth: isFront ? '2px' : '1px',
+                boxShadow: isFront ? '0 10px 30px var(--accent-glow)' : 'var(--shadow-md)',
+                transformOrigin: 'center center'
               }}
             >
               <div>
                 <div style={{ fontSize: '2.5rem', marginBottom: '12px' }}>{item.icon}</div>
-                <h4 style={{ margin: '0 0 8px 0', fontSize: '1.15rem', color: '#0f172a', fontWeight: '700' }}>
+                <h4 style={{ margin: '0 0 8px 0', fontSize: '1.15rem', color: 'var(--text-main)', fontWeight: '700' }}>
                   {item.title}
                 </h4>
                 <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', lineHeight: '1.4', margin: 0 }}>
@@ -117,8 +145,10 @@ export default function VortexGallery({ onSelect }) {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    cursor: 'pointer'
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease'
                   }}
+                  className="vortex-action-btn"
                 >
                   <ArrowRight size={14} />
                 </button>

@@ -335,19 +335,25 @@ function WriterAIWorkspace({ order }) {
   );
 }
 
-export default function ManageOrders({ user, setView, onLoginSuccess }) {
+export default function ManageOrders({ user, setView, onLoginSuccess, initialAuthMode }) {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState(null);
   
   // Auth Form States (when logged out)
-  const [authMode, setAuthMode] = useState('login'); // 'login' or 'register'
+  const [authMode, setAuthMode] = useState(initialAuthMode || 'login'); // 'login' or 'register'
   const [authEmail, setAuthEmail] = useState('');
   const [authPassword, setAuthPassword] = useState('');
   const [authName, setAuthName] = useState('');
   const [authPhone, setAuthPhone] = useState('');
   const [authError, setAuthError] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
+
+  useEffect(() => {
+    if (initialAuthMode) {
+      setAuthMode(initialAuthMode);
+    }
+  }, [initialAuthMode]);
 
   const handleAuthSubmit = async (e) => {
     e.preventDefault();

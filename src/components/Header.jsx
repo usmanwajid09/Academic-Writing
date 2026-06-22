@@ -1,44 +1,25 @@
 import React from 'react';
-import { GraduationCap, LogOut, User, Menu, X, Sun, Moon } from 'lucide-react';
+import { GraduationCap, LogOut, User, Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export default function Header({ user, onLogout, setView, activeView }) {
+export default function Header({ user, onLogout, setView, activeView, setPortalAuthMode }) {
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [fullscreenOpen, setFullscreenOpen] = React.useState(false);
-  const [hoveredLink, setHoveredLink] = React.useState(null);
-  const [mousePos, setMousePos] = React.useState({ x: 0, y: 0 });
-  const [theme, setTheme] = React.useState(() => {
-    const saved = localStorage.getItem('theme');
-    if (saved) return saved;
-    return document.documentElement.classList.contains('theme-dark') ? 'dark' : 'light';
-  });
 
   React.useEffect(() => {
-    if (theme === 'dark') {
-      document.documentElement.classList.add('theme-dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('theme-dark');
-      localStorage.setItem('theme', 'light');
-    }
-  }, [theme]);
-
-  const toggleTheme = () => {
-    setTheme(prev => prev === 'dark' ? 'light' : 'dark');
-  };
+    document.documentElement.classList.remove('theme-dark');
+    localStorage.removeItem('theme');
+  }, []);
 
   const navItems = [
-    { key: 'home', label: 'Home', img: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=400&q=80' },
-    { key: 'about', label: 'About Us', img: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=400&q=80' },
-    { key: 'services', label: 'Our Services', img: 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=400&q=80' },
-    { key: 'pricing', label: 'Pricing Calculator', img: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=400&q=80' },
-    { key: 'faq', label: 'FAQ Directory', img: 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=400&q=80' },
-    { key: 'contact', label: 'Contact Support', img: 'https://images.unsplash.com/photo-1501504905252-473c47e087f8?auto=format&fit=crop&w=400&q=80' }
+    { key: 'home', label: 'Home' },
+    { key: 'about', label: 'About Us' },
+    { key: 'services', label: 'Our Services' },
+    { key: 'samples', label: 'Work Samples' },
+    { key: 'pricing', label: 'Pricing Calculator' },
+    { key: 'faq', label: 'FAQ Directory' },
+    { key: 'contact', label: 'Contact Support' }
   ];
-
-  const handleMouseMove = (e) => {
-    setMousePos({ x: e.clientX, y: e.clientY });
-  };
 
   const handleNav = (view, elementId) => {
     setView(view);
@@ -69,7 +50,7 @@ export default function Header({ user, onLogout, setView, activeView }) {
         <div className="container" style={styles.navContainer}>
           <div style={styles.logo} onClick={() => handleNav('home')}>
             <GraduationCap size={32} color="var(--primary)" />
-            <span style={styles.logoText}>Academia<span style={{ fontWeight: '400', color: 'var(--text-muted)' }}>Writing</span></span>
+            <span style={styles.logoText}>SKY <span style={{ fontWeight: '400', color: 'var(--text-muted)' }}>Academic</span></span>
           </div>
 
           {/* Desktop Navigation */}
@@ -77,16 +58,13 @@ export default function Header({ user, onLogout, setView, activeView }) {
             <span style={activeView === 'home' ? styles.activeLink : styles.navLink} onClick={() => handleNav('home')}>Home</span>
             <span style={activeView === 'about' ? styles.activeLink : styles.navLink} onClick={() => handleNav('about')}>About Us</span>
             <span style={activeView === 'services' ? styles.activeLink : styles.navLink} onClick={() => handleNav('services')}>Our Services</span>
+            <span style={activeView === 'samples' ? styles.activeLink : styles.navLink} onClick={() => handleNav('samples')}>Samples</span>
             <span style={activeView === 'pricing' ? styles.activeLink : styles.navLink} onClick={() => handleNav('pricing')}>Pricing</span>
             <span style={activeView === 'faq' ? styles.activeLink : styles.navLink} onClick={() => handleNav('faq')}>FAQ</span>
             <span style={activeView === 'contact' ? styles.activeLink : styles.navLink} onClick={() => handleNav('contact')}>Contact</span>
           </nav>
 
           <div style={styles.authActions}>
-            <button className="theme-toggle-btn" onClick={toggleTheme} title="Toggle Theme">
-              {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
-              <span>{theme === 'dark' ? 'Light' : 'Dark'}</span>
-            </button>
             {user ? (
               <div style={styles.userSection}>
                 <div style={styles.userInfo} onClick={() => handleNav('portal')}>
@@ -103,8 +81,11 @@ export default function Header({ user, onLogout, setView, activeView }) {
               </div>
             ) : (
               <div style={styles.guestActions}>
-                <button style={styles.loginBtn} onClick={() => handleNav('portal')}>
+                <button style={styles.loginBtn} onClick={() => { setPortalAuthMode('login'); handleNav('portal'); }}>
                   Sign In
+                </button>
+                <button style={styles.signupBtn} onClick={() => { setPortalAuthMode('register'); handleNav('portal'); }}>
+                  Sign Up
                 </button>
                 <button className="btn-primary" onClick={() => handleNav('order')}>
                   Order Now
@@ -129,15 +110,12 @@ export default function Header({ user, onLogout, setView, activeView }) {
       {/* Fullscreen Overlay Menu */}
       <div 
         className={`fullscreen-menu-overlay ${fullscreenOpen ? 'open' : ''}`}
-        onMouseMove={handleMouseMove}
       >
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           {navItems.map((item) => (
             <span 
               key={item.key}
               className="menu-link-item"
-              onMouseEnter={() => setHoveredLink(item.key)}
-              onMouseLeave={() => setHoveredLink(null)}
               onClick={() => handleNav(item.key)}
             >
               {item.label}
@@ -148,29 +126,13 @@ export default function Header({ user, onLogout, setView, activeView }) {
               <button className="btn-accent" onClick={() => handleNav('portal')}>Manage Orders</button>
             ) : (
               <>
-                <button className="btn-secondary" style={{ color: '#fff', borderColor: '#fff' }} onClick={() => handleNav('portal')}>Sign In</button>
+                <button className="btn-secondary" style={{ color: '#fff', borderColor: '#fff' }} onClick={() => { setPortalAuthMode('login'); handleNav('portal'); }}>Sign In</button>
+                <button className="btn-secondary" style={{ color: '#fff', borderColor: '#fff' }} onClick={() => { setPortalAuthMode('register'); handleNav('portal'); }}>Sign Up</button>
                 <button className="btn-primary" onClick={() => handleNav('order')}>Order Now</button>
               </>
             )}
           </div>
         </div>
-      </div>
-
-      {/* Floating preview image */}
-      <div 
-        className={`menu-floating-preview ${hoveredLink ? 'visible' : ''}`}
-        style={{
-          left: `${mousePos.x + 20}px`,
-          top: `${mousePos.y + 20}px`
-        }}
-      >
-        {hoveredLink && (
-          <img 
-            src={navItems.find(item => item.key === hoveredLink)?.img} 
-            alt="Preview" 
-            className="menu-floating-img"
-          />
-        )}
       </div>
     </header>
   );
@@ -330,6 +292,20 @@ const styles = {
     ':hover': {
       color: 'var(--primary)',
     }
+  },
+  signupBtn: {
+    background: 'none',
+    border: '1px solid var(--border-light)',
+    borderRadius: '6px',
+    color: 'var(--text-main)',
+    fontWeight: '600',
+    cursor: 'pointer',
+    padding: '6px 14px',
+    fontSize: '0.9rem',
+    transition: 'var(--transition)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   mobileDrawer: {
     display: 'flex',

@@ -3,30 +3,28 @@
 :root {
   --font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   
-  /* Primary HSL Color Palette */
-  --hue: 212;
-  --primary: HSL(var(--hue), 95%, 50%);
-  --primary-hover: HSL(var(--hue), 95%, 42%);
-  --primary-light: HSL(var(--hue), 95%, 96%);
-  --primary-glow: rgba(0, 122, 255, 0.15);
+  /* Primary HSL Color Palette - Deep Forest Green */
+  --primary: HSL(164, 76%, 18%);
+  --primary-hover: HSL(164, 76%, 12%);
+  --primary-light: HSL(164, 40%, 96%);
+  --primary-glow: rgba(10, 58, 42, 0.15);
   
-  /* Accent HSL Color Palette */
-  --accent-hue: 142;
-  --accent: HSL(var(--accent-hue), 76%, 40%);
-  --accent-hover: HSL(var(--accent-hue), 76%, 33%);
-  --accent-light: HSL(var(--accent-hue), 76%, 95%);
-  --accent-glow: rgba(40, 167, 69, 0.15);
+  /* Accent HSL Color Palette - Luxury Gold */
+  --accent: HSL(38, 65%, 46%);
+  --accent-hover: HSL(38, 65%, 38%);
+  --accent-light: HSL(38, 50%, 96%);
+  --accent-glow: rgba(189, 138, 39, 0.15);
   
-  /* Neutral Color Palette (Light Mode Default) */
-  --text-main: #1d2939;
-  --text-muted: #667085;
-  --border-light: #e4e7ec;
-  --bg-main: #fcfcfd;
+  /* Neutral Color Palette (Warm Champagne/Cream Theme) */
+  --text-main: #232b28;
+  --text-muted: #5f6d67;
+  --border-light: #e6eae7;
+  --bg-main: #faf8f5;
   --bg-card: #ffffff;
   
-  --shadow-color: rgba(0, 0, 0, 0.04);
-  --shadow-color-md: rgba(0, 0, 0, 0.08);
-  --shadow-color-lg: rgba(0, 0, 0, 0.12);
+  --shadow-color: rgba(42, 58, 50, 0.04);
+  --shadow-color-md: rgba(42, 58, 50, 0.08);
+  --shadow-color-lg: rgba(42, 58, 50, 0.12);
   
   /* Dimensions & Offsets */
   --radius-sm: 8px;
@@ -41,24 +39,7 @@
   --theme-transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Dark Mode Overrides */
-html.theme-dark {
-  --text-main: #f3f4f6;
-  --text-muted: #9ca3af;
-  --border-light: rgba(255, 255, 255, 0.08);
-  --bg-main: #090d16;
-  --bg-card: rgba(17, 24, 39, 0.85);
-  
-  --primary-light: rgba(0, 122, 255, 0.12);
-  --primary-glow: rgba(0, 122, 255, 0.3);
-  
-  --accent-light: rgba(40, 167, 69, 0.12);
-  --accent-glow: rgba(40, 167, 69, 0.3);
-  
-  --shadow-color: rgba(0, 0, 0, 0.3);
-  --shadow-color-md: rgba(0, 0, 0, 0.4);
-  --shadow-color-lg: rgba(0, 0, 0, 0.5);
-}
+
 
 /* Global Reset */
 * {
@@ -452,9 +433,9 @@ p {
 }
 
 .gradient-bg-hero {
-  background: radial-gradient(circle at 80% 20%, rgba(0, 122, 255, 0.08) 0%, transparent 40%),
-              radial-gradient(circle at 10% 80%, rgba(40, 167, 69, 0.06) 0%, transparent 40%),
-              radial-gradient(circle at 50% 50%, rgba(244, 246, 249, 1) 0%, rgba(235, 239, 244, 1) 100%);
+  background: radial-gradient(circle at 80% 20%, var(--primary-glow) 0%, transparent 40%),
+              radial-gradient(circle at 10% 80%, var(--accent-glow) 0%, transparent 40%),
+              radial-gradient(circle at 50% 50%, var(--bg-main) 0%, #f5f1eb 100%);
 }
 
 .glow-card-primary {
@@ -474,7 +455,7 @@ p {
 
 /* AI Helper Tool styling */
 .ai-helper-btn {
-  background: linear-gradient(135deg, #6366f1, #a855f7);
+  background: linear-gradient(135deg, var(--primary), var(--accent));
   color: #ffffff;
   border: none;
   border-radius: 6px;
@@ -485,14 +466,14 @@ p {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  box-shadow: 0 4px 10px rgba(168, 85, 247, 0.25);
+  box-shadow: 0 4px 10px var(--primary-glow);
   transition: all 0.2s ease;
 }
 
 .ai-helper-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 14px rgba(168, 85, 247, 0.35);
-  background: linear-gradient(135deg, #4f46e5, #9333ea);
+  box-shadow: 0 6px 14px var(--accent-glow);
+  background: linear-gradient(135deg, var(--primary-hover), var(--accent-hover));
 }
 
 .ai-helper-panel {
@@ -525,7 +506,7 @@ p {
 
 .ai-suggestion-item:hover {
   background: rgba(255, 255, 255, 0.1);
-  border-color: #a855f7;
+  border-color: var(--accent);
   transform: translateX(4px);
 }
 
@@ -538,7 +519,7 @@ p {
   left: 0;
   width: 0%;
   height: 4px;
-  background: linear-gradient(90deg, var(--primary), #a855f7, var(--accent));
+  background: linear-gradient(90deg, var(--primary), var(--accent));
   z-index: 9999;
 }
 
@@ -586,7 +567,7 @@ p {
     from 0deg,
     transparent 20%,
     var(--primary) 40%,
-    #a855f7 60%,
+    var(--primary-light) 60%,
     var(--accent) 80%,
     transparent 100%
   );
@@ -596,7 +577,7 @@ p {
 
 .neon-border-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 12px 30px rgba(99, 102, 241, 0.2);
+  box-shadow: 0 12px 30px var(--primary-glow);
 }
 
 .neon-border-card-inner {
@@ -614,7 +595,7 @@ p {
 
 /* BoldText AI Modal & UI Components */
 .boldtext-trigger-btn {
-  background: linear-gradient(135deg, #ec4899, #8b5cf6);
+  background: linear-gradient(135deg, var(--primary), var(--accent));
   color: #fff;
   border: none;
   border-radius: 20px;
@@ -625,12 +606,12 @@ p {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.25);
+  box-shadow: 0 4px 12px var(--primary-glow);
   transition: var(--transition);
 }
 .boldtext-trigger-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4);
+  box-shadow: 0 6px 16px var(--accent-glow);
   filter: brightness(1.1);
 }
 
@@ -704,9 +685,9 @@ p {
 }
 .boldtext-tab.active {
   opacity: 1;
-  border-bottom-color: #8b5cf6;
-  color: #8b5cf6;
-  background: rgba(139, 92, 246, 0.05);
+  border-bottom-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-light);
 }
 
 .boldtext-body {
@@ -950,29 +931,6 @@ p {
   transform: scale(1.05);
   text-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
 }
-.menu-floating-preview {
-  position: fixed;
-  width: 280px;
-  height: 180px;
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  pointer-events: none;
-  z-index: 10000;
-  box-shadow: var(--shadow-lg);
-  border: 2px solid rgba(255, 255, 255, 0.1);
-  transform: translate(-50%, -50%) scale(0);
-  opacity: 0;
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
-}
-.menu-floating-preview.visible {
-  transform: translate(-50%, -50%) scale(1);
-  opacity: 1;
-}
-.menu-floating-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
 
 /* --- 3D Vortex Gallery --- */
 .vortex-viewport {
@@ -1009,12 +967,12 @@ p {
   padding: 24px;
   backface-visibility: visible;
   transform-style: preserve-3d;
-  transition: box-shadow 0.3s ease;
+  transition: box-shadow 0.3s ease, opacity 0.3s ease, filter 0.3s ease, border-color 0.3s ease;
   user-select: none;
 }
 .vortex-item:hover {
-  box-shadow: 0 12px 30px rgba(139, 92, 246, 0.25);
-  border-color: var(--primary);
+  box-shadow: 0 12px 30px var(--accent-glow);
+  border-color: var(--accent);
 }
 
 /* --- Circu CD Widget --- */
@@ -1093,7 +1051,7 @@ p {
   width: 65px;
   height: 65px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #a855f7, #ec4899);
+  background: linear-gradient(135deg, var(--primary), var(--accent));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1148,7 +1106,7 @@ p {
 .visualizer-bar {
   flex: 1;
   height: 3px;
-  background: #ec4899;
+  background: var(--accent);
   border-radius: 2px;
   transition: height 0.1s ease;
 }
@@ -1193,7 +1151,7 @@ p {
   width: 100%;
   height: 100%;
   pointer-events: none;
-  background: linear-gradient(135deg, #100b26, #21092e);
+  background: linear-gradient(135deg, #091a13, #151d14);
   clip-path: circle(0px at var(--mouse-x, 0%) var(--mouse-y, 0%));
   display: flex;
   flex-direction: column;
@@ -1201,11 +1159,11 @@ p {
   align-items: flex-start;
   padding: 40px;
   color: #ffffff;
-  border: 2px solid #a855f7;
+  border: 2px solid var(--accent);
   border-radius: var(--radius-md);
   box-sizing: border-box;
   transition: clip-path 0.05s ease-out;
-  box-shadow: inset 0 0 50px rgba(168, 85, 247, 0.35);
+  box-shadow: inset 0 0 50px rgba(189, 138, 39, 0.35);
 }
 .xray-card-container:hover .xray-overlay-layer {
   clip-path: circle(90px at var(--mouse-x, 0%) var(--mouse-y, 0%));
@@ -1215,12 +1173,12 @@ p {
   width: 180px;
   height: 180px;
   border-radius: 50%;
-  border: 2px dashed rgba(168, 85, 247, 0.7);
+  border: 2px dashed var(--accent);
   pointer-events: none;
   transform: translate(-50%, -50%) scale(0);
   opacity: 0;
   transition: transform 0.3s ease, opacity 0.3s ease;
-  box-shadow: 0 0 30px rgba(168, 85, 247, 0.25);
+  box-shadow: 0 0 30px var(--accent-glow);
   z-index: 4;
 }
 .xray-card-container:hover .xray-cursor {
@@ -1382,7 +1340,7 @@ p {
 }
 .liquid-fill {
   height: 100%;
-  background: linear-gradient(90deg, #3b82f6, #10b981);
+  background: linear-gradient(90deg, var(--primary), var(--accent));
   border-radius: var(--radius-full);
   transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s ease;
   position: relative;
@@ -2100,5 +2058,177 @@ p {
 @keyframes slideUp {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Floating WhatsApp Button --- */
+.whatsapp-float-btn {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background-color: #25d366;
+  color: #fff;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  z-index: 9999;
+  transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+  text-decoration: none;
+}
+
+.whatsapp-float-btn:hover {
+  background-color: #128c7e;
+  transform: scale(1.1);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+}
+
+.whatsapp-float-btn svg {
+  width: 32px;
+  height: 32px;
+  fill: #fff;
+}
+
+/* Pulsing Outer Ring */
+.whatsapp-pulse-ring {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 2px solid #25d366;
+  animation: whatsapp-pulse 1.8s infinite ease-out;
+  pointer-events: none;
+  box-sizing: border-box;
+}
+
+@keyframes whatsapp-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+/* Tooltip on Hover */
+.whatsapp-tooltip {
+  visibility: hidden;
+  width: 190px;
+  background-color: #1e293b;
+  color: #fff;
+  text-align: center;
+  border-radius: 8px;
+  padding: 8px 12px;
+  position: absolute;
+  right: 75px;
+  top: 50%;
+  transform: translateY(-50%) translateX(10px);
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s, visibility 0.3s;
+  font-size: 0.82rem;
+  font-weight: 600;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  pointer-events: none;
+}
+
+.whatsapp-tooltip::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  margin-top: -6px;
+  border-width: 6px;
+  border-style: solid;
+  border-color: transparent transparent transparent #1e293b;
+}
+
+.whatsapp-float-btn:hover .whatsapp-tooltip {
+  visibility: visible;
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+/* --- Simulated Payment Gateway Modal --- */
+.payment-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.payment-modal-card {
+  background: #ffffff;
+  border-radius: 16px;
+  width: 500px;
+  max-width: 90%;
+  box-shadow: var(--shadow-xl);
+  overflow: hidden;
+  border: 1px solid var(--border-light);
+}
+
+.payment-modal-header {
+  background: var(--primary);
+  color: #ffffff;
+  padding: 24px;
+  text-align: left;
+}
+
+.payment-modal-header h3 {
+  margin: 0 0 6px 0;
+  color: #ffffff;
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.payment-modal-method {
+  font-size: 0.75rem;
+  opacity: 0.9;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 4px 8px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.payment-modal-body {
+  padding: 28px;
+}
+
+/* Gateway Spinner */
+.gateway-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid var(--primary-light);
+  border-top: 4px solid var(--primary);
+  border-radius: 50%;
+  animation: gateway-spin 1s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes gateway-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes scaleUp {
+  0% { transform: scale(0.6); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
 }
 
