@@ -992,6 +992,20 @@ export default function OrderNow({ initialCalcState, user, onLoginSuccess, setVi
                   </motion.div>
                 )}
               </AnimatePresence>
+
+              {/* Action Button inside Step 3 Card (Essential for Mobile/Viewport clarity) */}
+              <div style={{ marginTop: '24px' }}>
+                <motion.button 
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
+                  type="button" 
+                  onClick={handleCheckout} 
+                  className="btn-accent" 
+                  style={{ width: '100%', justifyContent: 'center', padding: '14px', fontSize: '1rem', fontWeight: '700' }}
+                >
+                  {paymentMethod === 'bank' ? 'Confirm Bank Transfer & Place Order' : 'Proceed to Secure Payment'}
+                </motion.button>
+              </div>
             </div>
           )}
         </div>
