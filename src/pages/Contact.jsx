@@ -14,10 +14,12 @@ export default function Contact() {
   ]);
   const [userMsg, setUserMsg] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const chatEndRef = useRef(null);
+  const chatBodyRef = useRef(null);
 
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (chatBodyRef.current) {
+      chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
+    }
   }, [chatMessages, isTyping]);
 
   const handleFormSubmit = (e) => {
@@ -238,7 +240,7 @@ export default function Contact() {
                 </div>
               </div>
 
-              <div className="chat-widget-body">
+              <div className="chat-widget-body" ref={chatBodyRef}>
                 {chatMessages.map(msg => (
                   <div 
                     key={msg.id} 
@@ -257,7 +259,6 @@ export default function Contact() {
                     <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--text-muted)', animation: 'bounce 1.4s infinite 0.4s' }}></div>
                   </div>
                 )}
-                <div ref={chatEndRef} />
               </div>
 
               <form onSubmit={handleSendChat} className="chat-widget-footer">
