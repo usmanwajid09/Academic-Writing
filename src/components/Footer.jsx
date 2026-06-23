@@ -1,5 +1,6 @@
 import React from 'react';
 import { GraduationCap, Mail, Phone, MapPin, Shield, CheckCircle } from 'lucide-react';
+import LogoImage from '../assets/image1.png';
 
 export default function Footer({ setView }) {
   const handleNav = (view, elementId) => {
@@ -20,8 +21,7 @@ export default function Footer({ setView }) {
         {/* Brand Block */}
         <div style={styles.brandCol}>
           <div style={styles.logo} onClick={() => handleNav('home')}>
-            <GraduationCap size={28} color="#ffffff" />
-            <span style={styles.logoText}>SKY <span style={{ fontWeight: '400', color: '#cbd5e1' }}>Academic</span></span>
+            <img src={LogoImage} alt="GlobeAcademics Logo" style={{ height: '36px', objectFit: 'contain', marginBottom: '16px' }} />
           </div>
           <p style={styles.brandDesc}>
             Providing premium, custom-tailored academic writing and research solutions since 2012. Our global team of expert writers is available around the clock to support your academic success.
@@ -68,11 +68,11 @@ export default function Footer({ setView }) {
           <ul style={styles.list}>
             <li style={styles.contactItem}>
               <Mail size={16} />
-              <span>support@skyacademic.com</span>
+              <span>support@globeacademics.com</span>
             </li>
             <li style={styles.contactItem}>
               <Phone size={16} />
-              <span>+1 (800) 555-0199 (Toll-Free)</span>
+              <span>+13252024597 (Toll-Free)</span>
             </li>
             <li style={styles.contactItem}>
               <a 
@@ -89,7 +89,7 @@ export default function Footer({ setView }) {
             </li>
             <li style={styles.contactItem}>
               <MapPin size={16} />
-              <span>100 Pine St, San Francisco, CA 94111</span>
+              <span>30 N Gould St Stee 44158. Sheridan Wyoming 82801</span>
             </li>
           </ul>
         </div>
@@ -98,7 +98,7 @@ export default function Footer({ setView }) {
       <hr style={styles.divider} />
 
       <div className="container" style={styles.bottomRow}>
-        <span>&copy; {new Date().getFullYear()} SKY Academic Writing Service. All rights reserved.</span>
+        <span>&copy; {new Date().getFullYear()} GlobeAcademics.com. All rights reserved.</span>
         <div style={styles.legalLinks}>
           <span style={styles.legalLink}>Privacy Policy</span>
           <span style={styles.legalLink}>Cookie Settings</span>

@@ -3,28 +3,28 @@
 :root {
   --font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   
-  /* Primary HSL Color Palette - Deep Forest Green */
-  --primary: HSL(164, 76%, 18%);
-  --primary-hover: HSL(164, 76%, 12%);
-  --primary-light: HSL(164, 40%, 96%);
-  --primary-glow: rgba(10, 58, 42, 0.15);
+  /* Primary HSL Color Palette - Premium Royal Navy Blue */
+  --primary: HSL(233, 70%, 26%);
+  --primary-hover: HSL(233, 70%, 20%);
+  --primary-light: HSL(233, 50%, 96%);
+  --primary-glow: rgba(20, 31, 114, 0.15);
   
-  /* Accent HSL Color Palette - Luxury Gold */
-  --accent: HSL(38, 65%, 46%);
-  --accent-hover: HSL(38, 65%, 38%);
-  --accent-light: HSL(38, 50%, 96%);
-  --accent-glow: rgba(189, 138, 39, 0.15);
+  /* Accent HSL Color Palette - Vibrant Coral/Rose Pink */
+  --accent: HSL(340, 97%, 56%);
+  --accent-hover: HSL(340, 97%, 46%);
+  --accent-light: HSL(340, 60%, 97%);
+  --accent-glow: rgba(251, 35, 106, 0.15);
   
-  /* Neutral Color Palette (Warm Champagne/Cream Theme) */
-  --text-main: #232b28;
-  --text-muted: #5f6d67;
-  --border-light: #e6eae7;
-  --bg-main: #faf8f5;
+  /* Neutral Color Palette (Modern Clean Cool Theme) */
+  --text-main: #1e293b;
+  --text-muted: #64748b;
+  --border-light: #e2e8f0;
+  --bg-main: #f8fafc;
   --bg-card: #ffffff;
   
-  --shadow-color: rgba(42, 58, 50, 0.04);
-  --shadow-color-md: rgba(42, 58, 50, 0.08);
-  --shadow-color-lg: rgba(42, 58, 50, 0.12);
+  --shadow-color: rgba(15, 23, 42, 0.04);
+  --shadow-color-md: rgba(15, 23, 42, 0.08);
+  --shadow-color-lg: rgba(15, 23, 42, 0.12);
   
   /* Dimensions & Offsets */
   --radius-sm: 8px;

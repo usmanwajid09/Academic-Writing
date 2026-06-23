@@ -38,6 +38,9 @@ app.use(cors({
 
 app.use(express.json());
 
+// Serve static assets from Vite build in production
+app.use(express.static(join(__dirname, 'dist')));
+
 // Serve uploaded files statically
 app.use('/uploads', express.static(join(__dirname, 'uploads')));
 
@@ -47,6 +50,11 @@ app.use('/api', apiRouter);
 // Basic health check route
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', time: new Date() });
+});
+
+// Wildcard fallback to serve index.html for client-side routing
+app.get('*', (req, res) => {
+  res.sendFile(join(__dirname, 'dist', 'index.html'));
 });
 
 app.listen(PORT, () => {

@@ -3,14 +3,14 @@ import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 
 const ITEMS = [
-  { title: 'Academic Essay', icon: '📝', rate: '$10.00/pg', description: 'Argumentative, narrative, and analysis essays custom structured.' },
-  { title: 'Research Paper', icon: '🔍', rate: '$18.00/pg', description: 'Deep qualitative or quantitative investigations with references.' },
-  { title: 'Case Study', icon: '📊', rate: '$20.00/pg', description: 'Corporate breakdowns and SWOT strategizing reports.' },
-  { title: 'Dissertation', icon: '🎓', rate: '$26.00/pg', description: 'Advanced chapters, outlines, and proposals written by PhDs.' },
-  { title: 'Coursework', icon: '📚', rate: '$14.00/pg', description: 'Weekly assignments, reviews, and short problem solutions.' },
-  { title: 'Admission Essay', icon: '🚀', rate: '$16.00/pg', description: 'High-impact personal statements to lock university spots.' },
-  { title: 'Term Paper', icon: '📁', rate: '$18.00/pg', description: 'Semester-end research papers summarizing subject literature.' },
-  { title: 'Book Report', icon: '📖', rate: '$12.00/pg', description: 'Detailed breakdowns, thematic analyzes, and character studies.' }
+  { title: 'Academic Essay', icon: '📝', rate: '$8.00/pg', description: 'Argumentative, narrative, and analysis essays custom structured.' },
+  { title: 'Research Paper', icon: '🔍', rate: '$12.00/pg', description: 'Deep qualitative or quantitative investigations with references.' },
+  { title: 'Case Study', icon: '📊', rate: '$12.00/pg', description: 'Corporate breakdowns and SWOT strategizing reports.' },
+  { title: 'Dissertation', icon: '🎓', rate: '$18.00/pg', description: 'Advanced chapters, outlines, and proposals written by PhDs.' },
+  { title: 'Coursework', icon: '📚', rate: '$10.00/pg', description: 'Weekly assignments, reviews, and short problem solutions.' },
+  { title: 'Admission Essay', icon: '🚀', rate: '$10.00/pg', description: 'High-impact personal statements to lock university spots.' },
+  { title: 'Term Paper', icon: '📁', rate: '$12.00/pg', description: 'Semester-end research papers summarizing subject literature.' },
+  { title: 'Book Report', icon: '📖', rate: '$8.00/pg', description: 'Detailed breakdowns, thematic analyzes, and character studies.' }
 ];
 
 export default function VortexGallery({ onSelect }) {

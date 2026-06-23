@@ -3,11 +3,11 @@ import { motion } from 'framer-motion';
 import { Sparkles, Calendar, Layers, FileText } from 'lucide-react';
 
 export const PRICING_MATRIX = {
-  highschool: { '14d': 10, '7d': 14, '5d': 16, '3d': 18, '2d': 20, '24h': 24, '8h': 26 },
-  undergrad_1_2: { '14d': 18, '7d': 20, '5d': 21, '3d': 22, '2d': 23, '24h': 24, '8h': 27 },
-  undergrad_3_4: { '14d': 20, '7d': 22, '5d': 23, '3d': 24, '2d': 25, '24h': 26, '8h': 28 },
-  masters: { '14d': 24, '7d': 26, '5d': 27, '3d': 27.5, '2d': 28, '24h': 29, '8h': 30 },
-  doctoral: { '14d': 26, '7d': 28, '5d': 29, '3d': 30, '2d': 31, '24h': 32, '8h': 34 }
+  highschool: { '14d': 8, '7d': 10, '5d': 12, '3d': 14, '2d': 16, '24h': 18, '8h': 20 },
+  undergrad_1_2: { '14d': 10, '7d': 12, '5d': 14, '3d': 16, '2d': 18, '24h': 20, '8h': 22 },
+  undergrad_3_4: { '14d': 12, '7d': 14, '5d': 16, '3d': 18, '2d': 20, '24h': 22, '8h': 24 },
+  masters: { '14d': 15, '7d': 17, '5d': 19, '3d': 21, '2d': 23, '24h': 25, '8h': 27 },
+  doctoral: { '14d': 18, '7d': 20, '5d': 22, '3d': 24, '2d': 26, '24h': 28, '8h': 30 }
 };
 
 export const DEADLINE_LABELS = {

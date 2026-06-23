@@ -33,3 +33,6 @@ uploads/
 
 # Environment Variables
 .env
+
+# Word documents
+*.docx

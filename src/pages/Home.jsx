@@ -24,7 +24,7 @@ export default function Home({ onOrderRedirect, setView }) {
 
   const faqs = [
     {
-      q: "Is it legal to use Academia Writing services?",
+      q: "Is it legal to use GlobeAcademics.com services?",
       a: "Yes, it is entirely legal. We hire professional academic writers who create unique, plagiarism-free papers from scratch. You can use these papers as model answers, study references, or sources of inspiration to better understand your subject and complete your assignments."
     },
     {
@@ -191,7 +191,7 @@ export default function Home({ onOrderRedirect, setView }) {
             </div>
             
             <h1 style={styles.heroTitle}>
-              SKY Academic <br />
+              GlobeAcademics.com <br />
               <span className="gradient-text">Writing Service</span>
             </h1>
             
@@ -261,7 +261,7 @@ export default function Home({ onOrderRedirect, setView }) {
         <div className="container">
           <div style={styles.sectionHeader}>
             <span style={styles.sectionSubtitle}>WHAT MAKES US THE BEST</span>
-            <h2>Why Students Choose Academia Writing</h2>
+            <h2>Why Students Choose GlobeAcademics.com</h2>
             <p style={{ maxWidth: '600px', margin: '12px auto 0 auto' }}>
               We deliver original papers tailored to your guidelines with the highest standards of confidentiality and client support.
             </p>
@@ -408,7 +408,7 @@ export default function Home({ onOrderRedirect, setView }) {
             <span style={styles.sectionSubtitle}>ABOUT OUR SERVICES</span>
             <h2>Expert Essay & Coursework Help Across 110+ Disciplines</h2>
             <p style={{ marginTop: '20px' }}>
-              Academia Writing has been a benchmark in academic writing since 2012. We support students from undergraduate classes to advanced doctoral programs. Whether you need a short argumentative essay, a business case study, a lab report, or a comprehensive PhD dissertation, we align our writers to match your subject.
+              GlobeAcademics.com has been a benchmark in academic writing since 2012. We support students from undergraduate classes to advanced doctoral programs. Whether you need a short argumentative essay, a business case study, a lab report, or a comprehensive PhD dissertation, we align our writers to match your subject.
             </p>
             <p style={{ marginTop: '16px' }}>
               We understand the stress that comes with tight deadlines, grading rubrics, and strict academic standards. Our processes are built around confidentiality, thorough editing, and seamless client communication.

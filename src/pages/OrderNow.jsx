@@ -975,7 +975,7 @@ export default function OrderNow({ initialCalcState, user, onLoginSuccess, setVi
                       </p>
                       <div style={styles.bankDetailCard}>
                         <strong>Bank:</strong> Faysal Bank Limited<br />
-                        <strong>Account Title:</strong> SKY Academic Services<br />
+                        <strong>Account Title:</strong> GlobeAcademics Services<br />
                         <strong>IBAN:</strong> PK86 FAYS 0123 4567 8901 2345
                       </div>
                       <div className="form-group" style={{ marginTop: '16px' }}>
@@ -1156,7 +1156,7 @@ export default function OrderNow({ initialCalcState, user, onLoginSuccess, setVi
               className="payment-modal-card"
             >
               <div className="payment-modal-header">
-                <h3>SKY Pay Secure Gateway</h3>
+                <h3>GlobePay Secure Gateway</h3>
                 <span className="payment-modal-method">
                   {paymentMethod === 'easypaisa' ? 'EasyPaisa Wallet' :
                    paymentMethod === 'jazzcash' ? 'JazzCash Wallet' :

@@ -1302,7 +1302,7 @@ In modern higher education, the integration of these models has created a dual p
         <div className="printable-invoice" style={{ display: 'none' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '2px solid #000', paddingBottom: '16px', marginBottom: '24px' }}>
             <div>
-              <h1 style={{ fontSize: '2rem', margin: 0 }}>Academia Writing Services</h1>
+              <h1 style={{ fontSize: '2rem', margin: 0 }}>GlobeAcademics.com Services</h1>
               <p style={{ margin: '4px 0 0 0', color: '#555' }}>Premium Custom Academic Solutions</p>
             </div>
             <div style={{ textAlign: 'right' }}>
@@ -1368,7 +1368,7 @@ In modern higher education, the integration of these models has created a dual p
           </div>
 
           <div style={{ borderTop: '1px solid #ccc', marginTop: '40px', paddingTop: '16px', textAlign: 'center', fontSize: '0.85rem', color: '#666' }}>
-            Thank you for choosing Academia Writing. Your satisfaction is our top priority. For support, contact admin@academic.com.
+            Thank you for choosing GlobeAcademics.com. Your satisfaction is our top priority. For support, contact support@globeacademics.com.
           </div>
         </div>
       )}
