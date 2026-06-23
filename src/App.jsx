@@ -59,7 +59,7 @@ export default function App() {
     return (
       <div className="flex-center" style={{ height: '100vh', flexDirection: 'column', gap: '16px' }}>
         <div style={styles.spinner}></div>
-        <span style={{ fontWeight: '600', color: 'var(--text-muted)' }}>Loading Academia Writing...</span>
+        <span style={{ fontWeight: '600', color: 'var(--text-muted)' }}>Loading GlobeAcademics.com...</span>
       </div>
     );
   }

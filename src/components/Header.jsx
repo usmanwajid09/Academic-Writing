@@ -1,6 +1,7 @@
 import React from 'react';
 import { GraduationCap, LogOut, User, Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import LogoImage from '../assets/image1.png';
 
 export default function Header({ user, onLogout, setView, activeView, setPortalAuthMode }) {
   const [menuOpen, setMenuOpen] = React.useState(false);
@@ -49,8 +50,7 @@ export default function Header({ user, onLogout, setView, activeView, setPortalA
       <div style={styles.navbar}>
         <div className="container" style={styles.navContainer}>
           <div style={styles.logo} onClick={() => handleNav('home')}>
-            <GraduationCap size={32} color="var(--primary)" />
-            <span style={styles.logoText}>SKY <span style={{ fontWeight: '400', color: 'var(--text-muted)' }}>Academic</span></span>
+            <img src={LogoImage} alt="GlobeAcademics Logo" style={{ height: '40px', objectFit: 'contain' }} />
           </div>
 
           {/* Desktop Navigation */}

@@ -4,7 +4,7 @@ import { Search, Plus, Minus, HelpCircle, ShieldCheck } from 'lucide-react';
 
 const FAQ_ITEMS = [
   {
-    q: "Is it legal to use Academia Writing services?",
+    q: "Is it legal to use GlobeAcademics.com services?",
     a: "Yes, it is entirely legal. Our custom writing service provides model research papers, essays, guidelines, and reference bibliographies designed to assist your own learning. You can utilize our papers as study guides, sources of inspiration, or templates to format your own writing, just as you would use tutoring services or textbook samples."
   },
   {

@@ -181,7 +181,7 @@ export default function Contact() {
                 </div>
                 <div>
                   <h4 style={{ color: '#0f172a', margin: '0 0 2px 0', fontSize: '0.95rem' }}>Call Toll Free</h4>
-                  <p style={{ margin: 0, fontSize: '0.88rem', fontWeight: '600' }}>+1 (800) 555-WRITER</p>
+                  <p style={{ margin: 0, fontSize: '0.88rem', fontWeight: '600' }}>+13252024597</p>
                 </div>
               </div>
 
@@ -191,7 +191,7 @@ export default function Contact() {
                 </div>
                 <div>
                   <h4 style={{ color: '#0f172a', margin: '0 0 2px 0', fontSize: '0.95rem' }}>Support Email</h4>
-                  <p style={{ margin: 0, fontSize: '0.88rem', fontWeight: '600' }}>support@skyacademic.com</p>
+                  <p style={{ margin: 0, fontSize: '0.88rem', fontWeight: '600' }}>support@globeacademics.com</p>
                 </div>
               </div>
 
@@ -219,7 +219,7 @@ export default function Contact() {
                 </div>
                 <div>
                   <h4 style={{ color: '#0f172a', margin: '0 0 2px 0', fontSize: '0.95rem' }}>Global Headquarters</h4>
-                  <p style={{ margin: 0, fontSize: '0.88rem', color: 'var(--text-muted)' }}>100 Pine Street, Suite 1250, San Francisco, CA 94111</p>
+                  <p style={{ margin: 0, fontSize: '0.88rem', color: 'var(--text-muted)' }}>30 N Gould St Stee 44158. Sheridan Wyoming 82801</p>
                 </div>
               </div>
             </div>

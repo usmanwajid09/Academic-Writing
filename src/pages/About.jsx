@@ -6,11 +6,34 @@ import CircuCD from '../components/CircuCD';
 
 const WRITERS = [
   {
+    name: 'Ameenul Haq',
+    degree: 'Senior Academic Consultant & Founder',
+    university: 'Freelancer.com Gold Tier',
+    rating: '5.00',
+    orders: '250+',
+    badge: 'Founder',
+    avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=400&h=400&q=80',
+    specialties: ['Scientific Research', 'Technical Writing', 'Academic Consultation'],
+    profileUrl: 'https://www.freelancer.com/u/ameenulhaq66'
+  },
+  {
+    name: 'SK EXCELLENCY',
+    degree: 'Premier Research Partner & Editor',
+    university: 'Freelancer.com Elite Tier',
+    rating: '4.99',
+    orders: '163 Reviews',
+    badge: 'Elite',
+    avatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=400&h=400&q=80',
+    specialties: ['Proofreading', 'Thesis Guidelines', 'Data Analysis'],
+    profileUrl: 'https://www.freelancer.com/u/skexcellency'
+  },
+  {
     name: 'Dr. Sarah Jenkins',
     degree: 'PhD in English Literature',
     university: 'Oxford University',
     rating: '4.98',
     orders: '1,420+',
+    badge: 'PhD',
     avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&h=400&q=80',
     specialties: ['Comparative Literature', 'Creative Writing', 'Shakespeare Studies']
   },
@@ -20,6 +43,7 @@ const WRITERS = [
     university: 'Chicago Booth',
     rating: '4.95',
     orders: '980+',
+    badge: 'MA',
     avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=400&h=400&q=80',
     specialties: ['Econometrics', 'Macroeconomic Policy', 'Market Analysis']
   },
@@ -29,6 +53,7 @@ const WRITERS = [
     university: 'MIT',
     rating: '4.99',
     orders: '1,120+',
+    badge: 'PhD',
     avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&h=400&q=80',
     specialties: ['Machine Learning', 'Cybersecurity', 'Algorithm Design']
   },
@@ -38,6 +63,7 @@ const WRITERS = [
     university: 'Trinity College Dublin',
     rating: '4.92',
     orders: '750+',
+    badge: 'MSc',
     avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&h=400&q=80',
     specialties: ['European History', 'Political Science', 'Historiography']
   }
@@ -208,7 +234,7 @@ export default function About({ setView }) {
                     alt={writer.name} 
                     className="writer-avatar" 
                   />
-                  <div className="writer-badge">PhD</div>
+                  <div className="writer-badge">{writer.badge || 'PhD'}</div>
                 </div>
                 
                 <h4 style={{ fontSize: '1.2rem', marginBottom: '4px', color: '#0f172a' }}>{writer.name}</h4>
@@ -228,13 +254,51 @@ export default function About({ setView }) {
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', justifyContent: 'center' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', justifyContent: 'center', marginBottom: '16px' }}>
                   {writer.specialties.map((spec, i) => (
                     <span key={i} style={{ background: '#f1f5f9', color: '#475569', fontSize: '0.72rem', padding: '3px 8px', borderRadius: '4px', fontWeight: '500' }}>
                       {spec}
                     </span>
                   ))}
                 </div>
+
+                {writer.profileUrl ? (
+                  <a 
+                    href={writer.profileUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="btn-accent"
+                    style={{ 
+                      display: 'inline-flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center', 
+                      gap: '6px', 
+                      width: '100%', 
+                      fontSize: '0.82rem', 
+                      padding: '8px 12px', 
+                      textDecoration: 'none',
+                      background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))',
+                      color: '#fff',
+                      borderRadius: 'var(--radius-sm)',
+                      fontWeight: '600'
+                    }}
+                  >
+                    View Freelancer Profile
+                  </a>
+                ) : (
+                  <button
+                    className="btn-primary"
+                    onClick={() => setView('order')}
+                    style={{ 
+                      width: '100%', 
+                      fontSize: '0.82rem', 
+                      padding: '8px 12px', 
+                      borderRadius: 'var(--radius-sm)'
+                    }}
+                  >
+                    Hire Writer
+                  </button>
+                )}
               </TiltCard>
             </motion.div>
           ))}
@@ -244,7 +308,7 @@ export default function About({ setView }) {
       {/* CTA section */}
       <section className="container">
         <div style={{ 
-          background: 'linear-gradient(135deg, #06241a, #0b3728)', 
+          background: 'linear-gradient(135deg, var(--primary), var(--primary-hover))', 
           borderRadius: 'var(--radius-md)', 
           padding: '48px', 
           textAlign: 'center', 
