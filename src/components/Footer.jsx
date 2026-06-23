@@ -21,7 +21,7 @@ export default function Footer({ setView }) {
         {/* Brand Block */}
         <div style={styles.brandCol}>
           <div style={styles.logo} onClick={() => handleNav('home')}>
-            <img src={LogoImage} alt="GlobeAcademics Logo" style={{ height: '36px', objectFit: 'contain', marginBottom: '16px' }} />
+            <img src={LogoImage} alt="GlobeAcademics Logo" style={{ height: '55px', objectFit: 'contain', marginBottom: '16px' }} />
           </div>
           <p style={styles.brandDesc}>
             Providing premium, custom-tailored academic writing and research solutions since 2012. Our global team of expert writers is available around the clock to support your academic success.

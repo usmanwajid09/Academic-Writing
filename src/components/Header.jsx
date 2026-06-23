@@ -50,7 +50,7 @@ export default function Header({ user, onLogout, setView, activeView, setPortalA
       <div style={styles.navbar}>
         <div className="container" style={styles.navContainer}>
           <div style={styles.logo} onClick={() => handleNav('home')}>
-            <img src={LogoImage} alt="GlobeAcademics Logo" style={{ height: '40px', objectFit: 'contain' }} />
+            <img src={LogoImage} alt="GlobeAcademics Logo" style={{ height: '52px', objectFit: 'contain' }} />
           </div>
 
           {/* Desktop Navigation */}
