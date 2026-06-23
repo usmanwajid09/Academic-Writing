@@ -23,49 +23,9 @@ const WRITERS = [
     rating: '4.99',
     orders: '163 Reviews',
     badge: 'Elite',
-    avatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=400&h=400&q=80',
+    avatar: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=400&h=400&q=80',
     specialties: ['Proofreading', 'Thesis Guidelines', 'Data Analysis'],
-    profileUrl: 'https://www.freelancer.com/u/skexcellency'
-  },
-  {
-    name: 'Dr. Sarah Jenkins',
-    degree: 'PhD in English Literature',
-    university: 'Oxford University',
-    rating: '4.98',
-    orders: '1,420+',
-    badge: 'PhD',
-    avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&h=400&q=80',
-    specialties: ['Comparative Literature', 'Creative Writing', 'Shakespeare Studies']
-  },
-  {
-    name: 'Prof. David Miller',
-    degree: 'MA in Economics & Finance',
-    university: 'Chicago Booth',
-    rating: '4.95',
-    orders: '980+',
-    badge: 'MA',
-    avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=400&h=400&q=80',
-    specialties: ['Econometrics', 'Macroeconomic Policy', 'Market Analysis']
-  },
-  {
-    name: 'Dr. Elena Rostova',
-    degree: 'PhD in Computer Science',
-    university: 'MIT',
-    rating: '4.99',
-    orders: '1,120+',
-    badge: 'PhD',
-    avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&h=400&q=80',
-    specialties: ['Machine Learning', 'Cybersecurity', 'Algorithm Design']
-  },
-  {
-    name: 'James O\'Connor',
-    degree: 'MSc in Modern History',
-    university: 'Trinity College Dublin',
-    rating: '4.92',
-    orders: '750+',
-    badge: 'MSc',
-    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&h=400&q=80',
-    specialties: ['European History', 'Political Science', 'Historiography']
+    profileUrl: 'https://www.freelancer.com/u/saminakiran2'
   }
 ];
 
