@@ -10,7 +10,7 @@ export default function Contact() {
 
   // Chat Widget Simulator States
   const [chatMessages, setChatMessages] = useState([
-    { id: 1, sender: 'agent', text: "Hello! My name is Emma from customer care. How can I help you today?" }
+    { id: 1, sender: 'agent', text: "Hello! My name is Emma from customer care. How can I help you today? If you have specific requirements, please connect on **[WhatsApp](https://wa.me/923212309276?text=Hi,%20I%20need%20assistance%20with%20my%20academic%20assignment.)** to discuss them directly." }
   ]);
   const [userMsg, setUserMsg] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -45,19 +45,19 @@ export default function Contact() {
 
     // Simulate agent response logic based on keyword detection
     setTimeout(() => {
-      let replyText = "Thank you for writing. An agent will review your inquiry shortly. If you need immediate assistance, please place an order or apply coupon **SAVE25** for your first paper.";
+      let replyText = "Thank you for writing! An agent will review your inquiry shortly. If you have specific requirements, please connect on **[WhatsApp](https://wa.me/923212309276?text=Hi,%20I%20need%20assistance%20with%20my%20specific%20requirements.)** to discuss them directly.";
       
       const query = inputMsg.toLowerCase();
       if (query.includes('discount') || query.includes('coupon') || query.includes('promo')) {
-        replyText = "We have an active 25% discount for first-time clients! Apply coupon code **SAVE25** in the invoice section of the order page.";
+        replyText = "We have an active 25% discount for first-time clients! Apply coupon code **SAVE25** in the invoice section of the order page. For a custom quote, please connect on **[WhatsApp](https://wa.me/923212309276)**.";
       } else if (query.includes('plagiarism') || query.includes('turnitin') || query.includes('original')) {
-        replyText = "All essays are written **100% from scratch** by our human writers. We scan every file with **Turnitin-compatible** plagiarism scanners before release.";
+        replyText = "All essays are written **100% from scratch** by our human writers. We scan every file with **Turnitin-compatible** plagiarism scanners. For specific formatting queries, connect on **[WhatsApp](https://wa.me/923212309276)**.";
       } else if (query.includes('refund') || query.includes('cancel')) {
-        replyText = "Order cancellations are supported. A **100% refund** is issued if a writer has not yet been assigned to your project.";
+        replyText = "Order cancellations are supported. A **100% refund** is issued if a writer has not yet been assigned to your project. If you have a billing concern, connect on **[WhatsApp](https://wa.me/923212309276)**.";
       } else if (query.includes('writer') || query.includes('who writes')) {
-        replyText = "Your papers are written by vetted native speakers holding **Master's and PhD degrees** matching your exact academic major.";
+        replyText = "Your papers are written by vetted native speakers holding **Master's and PhD degrees** matching your exact academic major. If you want to request a specific writer, please connect on **[WhatsApp](https://wa.me/923212309276)**.";
       } else if (query.includes('hi') || query.includes('hello')) {
-        replyText = "Hello! Please let me know how I can help. You can ask about **pricing**, **discounts**, **revisions**, or **order statuses**.";
+        replyText = "Hello! Please let me know how I can help. If you have specific requirements, please connect on **[WhatsApp](https://wa.me/923212309276)** to discuss them with our academic managers.";
       }
 
       setChatMessages(prev => [...prev, { id: Date.now() + 1, sender: 'agent', text: replyText }]);
@@ -180,7 +180,7 @@ export default function Contact() {
                   <Phone size={20} />
                 </div>
                 <div>
-                  <h4 style={{ color: '#0f172a', margin: '0 0 2px 0', fontSize: '0.95rem' }}>Call Toll Free</h4>
+                  <h4 style={{ color: '#0f172a', margin: '0 0 2px 0', fontSize: '0.95rem' }}>Call Us</h4>
                   <p style={{ margin: 0, fontSize: '0.88rem', fontWeight: '600' }}>+13252024597</p>
                 </div>
               </div>
@@ -248,6 +248,7 @@ export default function Contact() {
                     dangerouslySetInnerHTML={{
                       __html: msg.text
                         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                        .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" style="color: #fb236a; text-decoration: underline; font-weight: 700;">$1</a>')
                         .replace(/\n/g, '<br />')
                     }}
                   />

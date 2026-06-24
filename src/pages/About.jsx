@@ -3,6 +3,8 @@ import { motion } from 'framer-motion';
 import { Award, Users, BookOpen, Star, ArrowRight, ShieldCheck, CheckCircle } from 'lucide-react';
 import TiltCard from '../components/TiltCard';
 import CircuCD from '../components/CircuCD';
+import AmeenAvatar from '../assets/writer-ameen.jpg';
+import SKAvatar from '../assets/writer-sk.jpg';
 
 const WRITERS = [
   {
@@ -10,9 +12,9 @@ const WRITERS = [
     degree: 'Senior Academic Consultant & Founder',
     university: 'Freelancer.com Gold Tier',
     rating: '5.00',
-    orders: '250+',
+    orders: '2087 Reviews',
     badge: 'Founder',
-    avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=400&h=400&q=80',
+    avatar: AmeenAvatar,
     specialties: ['Scientific Research', 'Technical Writing', 'Academic Consultation'],
     profileUrl: 'https://www.freelancer.com/u/ameenulhaq66'
   },
@@ -21,9 +23,9 @@ const WRITERS = [
     degree: 'Premier Research Partner & Editor',
     university: 'Freelancer.com Elite Tier',
     rating: '4.99',
-    orders: '163 Reviews',
+    orders: '600+ Reviews',
     badge: 'Elite',
-    avatar: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=400&h=400&q=80',
+    avatar: SKAvatar,
     specialties: ['Proofreading', 'Thesis Guidelines', 'Data Analysis'],
     profileUrl: 'https://www.freelancer.com/u/saminakiran2'
   }

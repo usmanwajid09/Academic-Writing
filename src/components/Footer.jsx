@@ -72,7 +72,7 @@ export default function Footer({ setView }) {
             </li>
             <li style={styles.contactItem}>
               <Phone size={16} />
-              <span>+13252024597 (Toll-Free)</span>
+              <span>+13252024597</span>
             </li>
             <li style={styles.contactItem}>
               <a 
