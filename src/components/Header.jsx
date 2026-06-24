@@ -1,7 +1,7 @@
 import React from 'react';
 import { GraduationCap, LogOut, User, Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import LogoImage from '../assets/image1.png';
+import LogoImage from '../assets/logo.png';
 
 export default function Header({ user, onLogout, setView, activeView, setPortalAuthMode }) {
   const [menuOpen, setMenuOpen] = React.useState(false);

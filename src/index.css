@@ -9,11 +9,11 @@
   --primary-light: HSL(233, 50%, 96%);
   --primary-glow: rgba(20, 31, 114, 0.15);
   
-  /* Accent HSL Color Palette - Vibrant Coral/Rose Pink */
-  --accent: HSL(340, 97%, 56%);
-  --accent-hover: HSL(340, 97%, 46%);
-  --accent-light: HSL(340, 60%, 97%);
-  --accent-glow: rgba(251, 35, 106, 0.15);
+  /* Accent HSL Color Palette - Warm Brand Gold (matches logo) */
+  --accent: HSL(41, 90%, 47%);
+  --accent-hover: HSL(41, 90%, 39%);
+  --accent-light: HSL(41, 78%, 95%);
+  --accent-glow: rgba(212, 160, 23, 0.18);
   
   /* Neutral Color Palette (Modern Clean Cool Theme) */
   --text-main: #1e293b;

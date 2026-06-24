@@ -1,6 +1,6 @@
 import React from 'react';
 import { GraduationCap, Mail, Phone, MapPin, Shield, CheckCircle } from 'lucide-react';
-import LogoImage from '../assets/image1.png';
+import LogoImage from '../assets/logo-light.png';
 
 export default function Footer({ setView }) {
   const handleNav = (view, elementId) => {
@@ -89,7 +89,7 @@ export default function Footer({ setView }) {
             </li>
             <li style={styles.contactItem}>
               <MapPin size={16} />
-              <span>30 N Gould St Stee 44158. Sheridan Wyoming 82801</span>
+              <span>30 N Gould St Ste 44158, Sheridan, Wyoming 82801</span>
             </li>
           </ul>
         </div>

@@ -219,7 +219,7 @@ export default function Contact() {
                 </div>
                 <div>
                   <h4 style={{ color: '#0f172a', margin: '0 0 2px 0', fontSize: '0.95rem' }}>Global Headquarters</h4>
-                  <p style={{ margin: 0, fontSize: '0.88rem', color: 'var(--text-muted)' }}>30 N Gould St Stee 44158. Sheridan Wyoming 82801</p>
+                  <p style={{ margin: 0, fontSize: '0.88rem', color: 'var(--text-muted)' }}>30 N Gould St Ste 44158, Sheridan, Wyoming 82801</p>
                 </div>
               </div>
             </div>
