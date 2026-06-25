@@ -64,7 +64,7 @@ export default function Header({ user, onLogout, setView, activeView, setPortalA
             <span style={activeView === 'contact' ? styles.activeLink : styles.navLink} onClick={() => handleNav('contact')}>Contact</span>
           </nav>
 
-          <div style={styles.authActions}>
+          <div className="desktop-auth-actions" style={styles.authActions}>
             {user ? (
               <div style={styles.userSection}>
                 <div style={styles.userInfo} onClick={() => handleNav('portal')}>
@@ -123,7 +123,13 @@ export default function Header({ user, onLogout, setView, activeView, setPortalA
           ))}
           <div style={{ marginTop: '40px', display: 'flex', gap: '20px' }}>
             {user ? (
-              <button className="btn-accent" onClick={() => handleNav('portal')}>Manage Orders</button>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center', width: '100%' }}>
+                <div style={{ color: '#fff', fontSize: '1.1rem', fontWeight: '600', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <User size={18} /> {user.name} <span style={styles.roleBadge}>{user.role}</span>
+                </div>
+                <button className="btn-accent" style={{ width: '200px' }} onClick={() => handleNav('portal')}>Manage Orders</button>
+                <button className="btn-secondary" style={{ width: '200px', color: '#fca5a5', borderColor: '#ef4444' }} onClick={onLogout}>Log Out</button>
+              </div>
             ) : (
               <>
                 <button className="btn-secondary" style={{ color: '#fff', borderColor: '#fff' }} onClick={() => { setPortalAuthMode('login'); handleNav('portal'); }}>Sign In</button>
@@ -218,7 +224,6 @@ const styles = {
     padding: '8px 0',
   },
   authActions: {
-    display: 'flex',
     alignItems: 'center',
     gap: '16px',
   },
