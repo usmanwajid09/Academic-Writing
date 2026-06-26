@@ -121,7 +121,7 @@ export default function Header({ user, onLogout, setView, activeView, setPortalA
               {item.label}
             </span>
           ))}
-          <div style={{ marginTop: '40px', display: 'flex', gap: '20px' }}>
+          <div style={{ marginTop: '24px', display: 'flex', gap: '20px' }}>
             {user ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center', width: '100%' }}>
                 <div style={{ color: '#fff', fontSize: '1.1rem', fontWeight: '600', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
